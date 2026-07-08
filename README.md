@@ -3,6 +3,11 @@
 A privacy-focused, self-hosted WhatsApp archiving tool. It captures messages (including deleted ones) via a linked device connection and stores them in your own Firebase Firestore database.
 
 > [!IMPORTANT]
+> Migrating this project from Firebase to Hugging Face for more storage, and moving the backend from Render to Hugging Face too — one platform, easier to maintain and secure. The extra storage will be used to save images, voice messages, and other media that Baileys can capture. Also upgrading frontend security while I'm at it.
+>
+> **Do not sync your fork with this branch for now — it may break the logger.**
+
+> [!IMPORTANT]
 > Using this logger is completely safe and will not get your WhatsApp account banned. Here is why:
 > 
 > * **100% Passive (Read-Only):** WhatsApp bans accounts for *sending* spam, bulk messages, or unauthorized automated replies. This logger does not send messages; it acts strictly as a passive listener, which does not trigger WhatsApp's anti-spam algorithms.
