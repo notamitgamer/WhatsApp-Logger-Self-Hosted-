@@ -7,6 +7,8 @@ A privacy-focused, self-hosted WhatsApp archiving tool. It captures messages (in
 >
 > I'm trying to build a feature to save media like images, videos, and voice messages — but Firebase's free tier caps storage at 1GB, so it's not viable for that. I'm planning to add this as an optional feature using Hugging Face for storage instead. Messages will continue to be stored in Firebase as before. Frontend and Firebase security are also being upgraded as part of this effort.
 >
+> Okay, so. I made the [plan](plan.md).
+>
 > **Please do not sync your fork with this branch for now, as it may break the logger.**
 
 > [!IMPORTANT]
