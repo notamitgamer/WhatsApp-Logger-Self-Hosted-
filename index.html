@@ -18,6 +18,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
 
+    <!-- Trusted Types Bypass for CSP -->
+    <script>
+        if (window.trustedTypes && trustedTypes.createPolicy && !trustedTypes.defaultPolicy) {
+            trustedTypes.createPolicy('default', {
+                createHTML: string => string,
+                createScriptURL: string => string,
+                createScript: string => string,
+            });
+        }
+    </script>
+
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -637,7 +648,7 @@
             <div class="sidebar-header">
                 <div style="display: flex; align-items: center; gap: 12px; padding: 12px 0;">
                     <h2 style="font-family: 'Lexend', sans-serif; font-size: 20px; font-weight: 500; color: var(--md-sys-color-on-surface); margin: 0;">Chat Log</h2>
-                    <span style="font-family: 'Lexend', sans-serif; font-size: 12px; font-weight: 500; color: var(--md-sys-color-on-surface-variant); background-color: var(--md-sys-color-surface-container-high); padding: 2px 8px; border-radius: 100px; display: inline-flex; align-items: center;">v4.1.5</span>
+                    <span style="font-family: 'Lexend', sans-serif; font-size: 12px; font-weight: 500; color: var(--md-sys-color-on-surface-variant); background-color: var(--md-sys-color-surface-container-high); padding: 2px 8px; border-radius: 100px; display: inline-flex; align-items: center;">v4.1.7</span>
                 </div>
                 <div style="display:flex; gap: 8px;">
                     <button class="icon-btn ripple-surface" onclick="refreshApp()"><span class="material-symbols-rounded">refresh</span></button>
@@ -908,6 +919,16 @@
 
     <!-- MAIN APP SCRIPT -->
     <script>
+        // Catch global errors to prevent silent forever-spinners
+        window.onerror = function(msg, url, line) {
+            const loader = document.getElementById('authLoader');
+            if(loader && !loader.classList.contains('hidden')) {
+                loader.innerHTML = `<div style="color:var(--md-sys-color-error); font-size:13px; text-align:left; padding:16px; border: 1px solid var(--md-sys-color-error); border-radius: 8px;">
+                    <strong>System Error:</strong><br>${msg}<br>Line: ${line}
+                </div>`;
+            }
+        };
+
         const RENDER_BACKEND_URL = ""; 
         const firebaseConfig = {
             apiKey: "",
@@ -933,7 +954,17 @@
 
         function initIndexedDB() {
             return new Promise((resolve) => {
-                if (!window.indexedDB) {
+                let idb;
+                try {
+                    idb = window.indexedDB;
+                } catch (e) {
+                    console.warn("IDB Access Denied:", e);
+                    isIdbSupported = false;
+                    resolve();
+                    return;
+                }
+
+                if (!idb) {
                     isIdbSupported = false;
                     resolve();
                     return;
@@ -1077,6 +1108,22 @@
             return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
         }
 
+        function formatLastActive(ts) {
+            if (!ts) return 'Unknown';
+            const date = new Date(ts * 1000);
+            const today = new Date();
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            
+            const timeOpts = { hour: '2-digit', minute: '2-digit' };
+            if (date.toDateString() === today.toDateString()) {
+                return `Today at ${date.toLocaleTimeString([], timeOpts)}`;
+            } else if (date.toDateString() === yesterday.toDateString()) {
+                return `Yesterday at ${date.toLocaleTimeString([], timeOpts)}`;
+            }
+            return `${date.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })} at ${date.toLocaleTimeString([], timeOpts)}`;
+        }
+
         // HTML Sanitizer to prevent Code Injection via chat messages
         function escapeHTML(str) {
             if (!str) return '';
@@ -1130,83 +1177,97 @@
         }
 
         window.onload = async () => {
-            await initIndexedDB();
+            try {
+                await initIndexedDB();
 
-            if (!navigator.onLine) {
-                document.getElementById('offlineIndicator').classList.remove('hidden');
-            }
-            window.addEventListener('online', () => {
-                document.getElementById('offlineIndicator').classList.add('hidden');
-            });
-            window.addEventListener('offline', () => {
-                document.getElementById('offlineIndicator').classList.remove('hidden');
-            });
+                if (!navigator.onLine) {
+                    document.getElementById('offlineIndicator').classList.remove('hidden');
+                }
+                window.addEventListener('online', () => {
+                    document.getElementById('offlineIndicator').classList.add('hidden');
+                });
+                window.addEventListener('offline', () => {
+                    document.getElementById('offlineIndicator').classList.remove('hidden');
+                });
 
-            if (localStorage.getItem('theme') === 'dark') {
-                document.body.setAttribute('data-theme', 'dark');
-                document.getElementById('darkModeToggle').checked = true;
-            }
-            document.getElementById('profileName').value = localStorage.getItem('profileName') || '';
-            document.getElementById('profilePhone').value = localStorage.getItem('profilePhone') || '';
-            const bg = localStorage.getItem('chatBg') || 1;
-            changeBg(bg, false);
-            populateFAQ();
-
-            // Setup Auth & App Routing with smooth transitions
-            const authValid = localStorage.getItem('wp_auth_expiry') > Date.now();
-            
-            if (authValid) {
-                // If auth is valid, fade out the auth screen completely and show the app
-                document.getElementById('auth-screen').style.opacity = '0';
+                if (localStorage.getItem('theme') === 'dark') {
+                    document.body.setAttribute('data-theme', 'dark');
+                    document.getElementById('darkModeToggle').checked = true;
+                }
+                document.getElementById('profileName').value = localStorage.getItem('profileName') || '';
+                document.getElementById('profilePhone').value = localStorage.getItem('profilePhone') || '';
                 
-                setTimeout(() => {
-                    document.getElementById('auth-screen').style.display = 'none';
-                    if (isMobileApp()) {
-                        const hasPin = localStorage.getItem('wp_app_pin');
-                        const useBio = localStorage.getItem('wp_app_bio') === 'true';
-                        document.getElementById('mobileSecuritySection').classList.remove('hidden');
-                        document.getElementById('pinLockToggle').checked = !!hasPin;
-                        document.getElementById('bioLockToggle').checked = useBio;
-                        
-                        if (hasPin || useBio) {
-                            initLockScreen(hasPin, useBio);
+                // Safely parse BG to prevent querySelector crash
+                const bg = parseInt(localStorage.getItem('chatBg')) || 1;
+                changeBg(bg, false);
+                populateFAQ();
+
+                // Setup Auth & App Routing with smooth transitions
+                const authValid = localStorage.getItem('wp_auth_expiry') > Date.now();
+                
+                if (authValid) {
+                    // If auth is valid, fade out the auth screen completely and show the app
+                    document.getElementById('auth-screen').style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        document.getElementById('auth-screen').style.display = 'none';
+                        if (isMobileApp()) {
+                            const hasPin = localStorage.getItem('wp_app_pin');
+                            const useBio = localStorage.getItem('wp_app_bio') === 'true';
+                            document.getElementById('mobileSecuritySection').classList.remove('hidden');
+                            document.getElementById('pinLockToggle').checked = !!hasPin;
+                            document.getElementById('bioLockToggle').checked = useBio;
+                            
+                            if (hasPin || useBio) {
+                                initLockScreen(hasPin, useBio);
+                            } else {
+                                document.getElementById('app-layout').classList.add('visible');
+                                loadChats();
+                            }
                         } else {
                             document.getElementById('app-layout').classList.add('visible');
                             loadChats();
                         }
-                    } else {
-                        document.getElementById('app-layout').classList.add('visible');
-                        loadChats();
-                    }
-                }, 400); // Wait for CSS opacity transition
-            } else {
-                // If not valid, hide the spinner and reveal the login form
-                document.getElementById('authLoader').classList.add('hidden');
-                document.getElementById('authForm').classList.remove('hidden');
-                document.getElementById('authForm').classList.add('fade-in');
-                
-                if (isMobileApp()) {
-                    document.getElementById('mobileSecuritySection').classList.remove('hidden');
-                }
-            }
-            
-            document.getElementById('messagesContainer').addEventListener('scroll', function() {
-                const fab = document.getElementById('scrollFab');
-                if (this.scrollHeight - this.scrollTop - this.clientHeight > 500) {
-                    fab.classList.add('visible');
+                    }, 400); // Wait for CSS opacity transition
                 } else {
-                    fab.classList.remove('visible');
-                    document.getElementById('newMsgBadge').classList.add('hidden');
+                    // If not valid, hide the spinner and reveal the login form
+                    document.getElementById('authLoader').classList.add('hidden');
+                    document.getElementById('authForm').classList.remove('hidden');
+                    document.getElementById('authForm').classList.add('fade-in');
+                    
+                    if (isMobileApp()) {
+                        document.getElementById('mobileSecuritySection').classList.remove('hidden');
+                    }
                 }
-            });
-
-            document.querySelectorAll('input[type="text"], input[type="password"]').forEach(input => {
-                input.addEventListener('focus', () => {
-                    if (window.innerWidth <= 768) {
-                        setTimeout(() => input.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
+                
+                document.getElementById('messagesContainer').addEventListener('scroll', function() {
+                    const fab = document.getElementById('scrollFab');
+                    if (this.scrollHeight - this.scrollTop - this.clientHeight > 500) {
+                        fab.classList.add('visible');
+                    } else {
+                        fab.classList.remove('visible');
+                        document.getElementById('newMsgBadge').classList.add('hidden');
                     }
                 });
-            });
+
+                document.querySelectorAll('input[type="text"], input[type="password"]').forEach(input => {
+                    input.addEventListener('focus', () => {
+                        if (window.innerWidth <= 768) {
+                            setTimeout(() => input.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
+                        }
+                    });
+                });
+            } catch (err) {
+                console.error("Critical Boot Error:", err);
+                const loader = document.getElementById('authLoader');
+                if (loader) {
+                    loader.innerHTML = `<div style="color:var(--md-sys-color-error); padding: 16px; text-align: center;">
+                        <span class="material-symbols-rounded" style="font-size: 32px; margin-bottom: 8px;">error</span>
+                        <p style="font-size: 14px; font-weight: 500;">App failed to load.</p>
+                        <p style="font-size: 12px; opacity: 0.8; margin-top: 4px;">${err.message}</p>
+                    </div>`;
+                }
+            }
         };
 
         // --- LOCK SCREEN LOGIC ---
@@ -1569,7 +1630,7 @@
             // Use real-time listener instead of one-time .get()
             window.chatListUnsub = db.collection('Chats').onSnapshot(async snap => {
                 const groups = {};
-                const excluded = [''];
+                const excluded = [];
 
                 snap.forEach(doc => {
                     const d = doc.data();
@@ -1592,52 +1653,104 @@
             });
         }
 
-function renderChatList(chats) {
-    const list = document.getElementById('contactList');
-    list.innerHTML = chats.length === 0 ? `<div style="text-align:center; padding:32px; color:var(--md-sys-color-outline);">No chats found</div>` : '';
+        function renderChatList(chats) {
+            const list = document.getElementById('contactList');
+            
+            if (chats.length === 0) {
+                list.innerHTML = `<div style="text-align:center; padding:32px; color:var(--md-sys-color-outline);">No chats found</div>`;
+                return;
+            }
 
-    chats.forEach(c => {
-        const el = document.createElement('div'); 
-        el.className = 'contact-item ripple-surface';
-        
-        // Priority: Custom Name > Display Name > Phone Number > Raw ID
-        const primaryName = c.customName || c.displayName || c.phoneNumber || c.id;
-        const isGroup = c.id.includes('@g.us');
-        
-        // Structure: Avatar | [ Name                  Time ]
-        //                   | [ Checkmark/Sender + Msg     ]
-        el.innerHTML = `
-            <div class="avatar">${isGroup ? '<span class="material-symbols-rounded">group</span>' : escapeHTML(primaryName[0]).toUpperCase()}</div>
-            <div class="contact-info" style="min-width: 0;">
-                <div class="contact-name" style="display:flex; justify-content:space-between; align-items:baseline; width:100%;">
-                    <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1;">${escapeHTML(primaryName)}</span>
-                    <span class="chat-time" style="font-size: 12px; color: var(--md-sys-color-on-surface-variant); font-weight: 400; margin-left: 8px; flex-shrink: 0;"></span>
-                </div>
-                <div class="contact-sub preview-text" style="display:flex; align-items:center; margin-top:2px; color:var(--md-sys-color-on-surface-variant);">
-                    <span class="preview-content" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%;">
-                        <span style="opacity:0.5; font-size: 13px;">Syncing...</span>
-                    </span>
-                </div>
-            </div>
-        `;
-        
-        el.onclick = () => openChat(c.ids, primaryName, el, isGroup, c.phoneNumber || c.id);
-        list.appendChild(el);
+            // Remove empty state or skeleton loading if present
+            if (list.querySelector('.skel-contact') || list.innerHTML.includes('No chats found')) {
+                list.innerHTML = '';
+            }
 
-        // Fetch the latest message asynchronously to prevent blocking the UI render
-        const updatePreview = async () => {
+            // Track active IDs to clean up stale nodes
+            const currentIds = new Set(chats.map(c => 'chat-' + c.id.replace(/[^a-zA-Z0-9]/g, '-')));
+
+            // Since chats array is sorted, iteratively appending them perfectly preserves/updates the physical DOM order
+            chats.forEach((c) => {
+                const safeDomId = 'chat-' + c.id.replace(/[^a-zA-Z0-9]/g, '-');
+                let el = document.getElementById(safeDomId);
+                
+                const primaryName = c.customName || c.displayName || c.phoneNumber || c.id;
+                const isGroup = c.id.includes('@g.us');
+                let needsPreviewUpdate = false;
+
+                // Create or Diff DOM Element
+                if (!el) {
+                    el = document.createElement('div');
+                    el.id = safeDomId;
+                    el.className = 'contact-item ripple-surface';
+                    el.innerHTML = `
+                        <div class="avatar">${isGroup ? '<span class="material-symbols-rounded">group</span>' : escapeHTML(primaryName[0]).toUpperCase()}</div>
+                        <div class="contact-info" style="min-width: 0;">
+                            <div class="contact-name" style="display:flex; justify-content:space-between; align-items:baseline; width:100%;">
+                                <span class="name-text" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1;">${escapeHTML(primaryName)}</span>
+                                <span class="chat-time" style="font-size: 12px; color: var(--md-sys-color-on-surface-variant); font-weight: 400; margin-left: 8px; flex-shrink: 0;"></span>
+                            </div>
+                            <div class="contact-sub preview-text" style="display:flex; align-items:center; margin-top:2px; color:var(--md-sys-color-on-surface-variant);">
+                                <span class="preview-content" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%;">
+                                    <span style="opacity:0.5; font-size: 13px;">Syncing...</span>
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                    needsPreviewUpdate = true;
+                    el.dataset.lastActive = c.lastActive;
+                } else {
+                    // Update Name/Avatar if backend changed it
+                    const nameSpan = el.querySelector('.name-text');
+                    if (nameSpan.innerText !== primaryName) {
+                        nameSpan.innerText = primaryName;
+                        el.querySelector('.avatar').innerHTML = isGroup ? '<span class="material-symbols-rounded">group</span>' : escapeHTML(primaryName[0]).toUpperCase();
+                    }
+                    
+                    // Check if new messages arrived in background
+                    const oldActive = parseFloat(el.dataset.lastActive || '0');
+                    if (c.lastActive > oldActive) {
+                        needsPreviewUpdate = true;
+                        el.dataset.lastActive = c.lastActive;
+                    }
+                }
+
+                // Re-append moves the element to its correct sorted spot at the bottom 
+                list.appendChild(el);
+                
+                el.onclick = () => openChat(c.ids, primaryName, el, isGroup, c.phoneNumber || c.id, c.lastActive);
+
+                // Fetch new message text in the background if needed
+                if (needsPreviewUpdate) {
+                    updatePreview(c, el, isGroup);
+                }
+
+                // If this is the currently open chat, dynamically update the header's timestamp
+                if (activeChatId && c.ids.includes(activeChatId)) {
+                    const baseId = c.phoneNumber || c.id;
+                    document.getElementById('headerId').innerText = `${baseId} • ${formatLastActive(c.lastActive)}`;
+                }
+            });
+
+            // Cleanup stale DOM nodes
+            Array.from(list.children).forEach(child => {
+                if (child.id && child.id.startsWith('chat-') && !currentIds.has(child.id)) {
+                    list.removeChild(child);
+                }
+            });
+        }
+
+        async function updatePreview(c, el, isGroup) {
             let allMsgs = [];
             for (const id of c.ids) {
                 const msgs = await getCachedMessages(id);
                 allMsgs = allMsgs.concat(msgs);
             }
             
-            // Sort descending to grab the absolute latest message in local cache
             allMsgs.sort((a, b) => b.timestamp - a.timestamp);
             let lastMsg = allMsgs.length > 0 ? allMsgs[0] : null;
 
-            // REAL-TIME PREVIEW SYNC: 
-            // If the server tells us this chat was active *after* our cached latest message, fetch the missing real-time snippet
+            // Background Firebase Fetch
             if (navigator.onLine && (!lastMsg || c.lastActive > lastMsg.timestamp)) {
                 try {
                     let latestOnline = null;
@@ -1647,6 +1760,7 @@ function renderChatList(chats) {
                         
                         if (!snap.empty) {
                             const data = snap.docs[0].data();
+                            data.chatId = id; 
                             if (!latestOnline || data.timestamp > latestOnline.timestamp) {
                                 latestOnline = data;
                             }
@@ -1664,7 +1778,6 @@ function renderChatList(chats) {
             const timeSpan = el.querySelector('.chat-time');
 
             if (lastMsg) {
-                // Format Timestamp: Time if today, Date if older
                 const msgDate = new Date(lastMsg.timestamp * 1000);
                 const today = new Date();
                 const isToday = msgDate.toDateString() === today.toDateString();
@@ -1673,7 +1786,6 @@ function renderChatList(chats) {
                     ? msgDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
                     : msgDate.toLocaleDateString([], { month: 'short', day: 'numeric' });
 
-                // Format Prefix: Double ticks for outgoing, Sender Name for incoming groups
                 let prefix = '';
                 if (lastMsg.fromMe) {
                     prefix = `<span class="material-symbols-rounded" style="font-size: 16px; vertical-align: text-bottom; margin-right: 4px; color: var(--md-sys-color-outline);">done_all</span>`;
@@ -1681,25 +1793,22 @@ function renderChatList(chats) {
                     prefix = `<span style="font-weight: 500;">${escapeHTML(lastMsg.senderName)}:</span> `;
                 }
                 
-                // Construct the final line properly escaped
                 const safePreviewText = escapeHTML(lastMsg.text || 'Media');
                 contentSpan.innerHTML = `${prefix}${safePreviewText}`;
             } else {
                 contentSpan.innerHTML = `<span style="font-style: italic; opacity: 0.7;">No messages</span>`;
             }
-        };
-        
-        updatePreview();
-    });
-}
+        }
 
         // --- UPDATED OPEN CHAT: DELTA SYNC + IDB + CINEMATIC UI ---
-        async function openChat(ids, name, el, isGroup, displayId) {
+        async function openChat(ids, name, el, isGroup, displayId, lastActive) {
             activeChatId = ids[0];
             isCurrentChatGroup = isGroup;
             document.getElementById('headerName').innerText = name;
             document.getElementById('chatHeaderContent').style.opacity = '1';
-            document.getElementById('headerId').innerText = displayId;
+            
+            const timeStr = lastActive ? formatLastActive(lastActive) : "Online";
+            document.getElementById('headerId').innerText = `${displayId} • ${timeStr}`;
             document.getElementById('headerAvatar').innerHTML = isGroup ? `<span class="material-symbols-rounded">group</span>` : escapeHTML(name[0]).toUpperCase();
 
             if (window.matchMedia('(max-width: 768px)').matches) {
@@ -1738,7 +1847,9 @@ function renderChatList(chats) {
 
             // 2. Delta Sync with Firebase
             let lastTs = 0;
-            if (cachedMsgs.length > 0) {
+            // Prevent cache poisoning by ensuring a baseline cache size before using delta sync.
+            // If the cache only has 1 or 2 messages, it forces a full fetch to auto-heal the chat.
+            if (cachedMsgs.length >= 5) {
                 lastTs = Math.max(...cachedMsgs.map(m => m.timestamp));
             }
             
