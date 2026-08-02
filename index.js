@@ -138,7 +138,6 @@ async function startWhatsApp() {
     sock = makeWASocket({
         version,
         logger,
-        printQRInTerminal: true,
         auth: state,
         browser: ["WhatsApp Logger Backend", "Chrome", "1.0.0"],
         syncFullHistory: true 
