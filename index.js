@@ -139,7 +139,7 @@ async function startWhatsApp() {
         version,
         logger,
         auth: state,
-        browser: ["WhatsApp Logger Backend", "Chrome", "1.0.0"],
+        browser: ["WhatsApp Logger v4.1.7", "Chrome", "4.1.7"],
         syncFullHistory: true 
     });
 
