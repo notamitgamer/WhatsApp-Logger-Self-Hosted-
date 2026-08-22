@@ -21,7 +21,8 @@ A privacy-focused, self-hosted WhatsApp archiving tool. It captures messages (in
 > * **Standard Linked Device:** The tool connects to WhatsApp using the official Multi-Device WebSocket protocol. To WhatsApp's servers, this connection looks exactly like you logging into standard WhatsApp Web on a secondary browser. 
 > * **No User Reports:** The number one cause of bans is other users reporting an account. Since this logger works silently in the background and does not interact with anyone, there is zero risk of being reported.
 
-### Check <a href="https://amit.is-a.dev/logger">guide</a> for detailed installation process.
+### Check <a href="https://amit.is-a.dev/logger">guide</a> for detailed installation process. 
+> *i forgot to upgrade the docs to 4.1.7, i need some time to do that.*
 
 ### Important notes:
  * It is recommended to download the **web app (PWA)** after the publication of the webpage for better security and native experience. 
