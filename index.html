@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WhatsApp Logger</title>
+    <title>WhatsApp Logger v4.2.1</title>
     
     <!-- PWA Manifest -->
-    <link rel="manifest" href="/assets/manifest-wpChat.json">
+    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#006C4C">
     
     <!-- SVG Favicon -->
-    <link rel="icon" href="/assets/icon.svg">
+    <link rel="icon" href="icon.svg">
 
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,9 +29,7 @@
         }
     </script>
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <!-- FIREBASE SDKS REMOVED -->
 
     <style>
         :root {
@@ -531,6 +529,11 @@
         }
     }
 
+    /* Logs view CSS */
+    .logs-container { max-height: 150px; overflow-y: auto; background: #000; color: #a9dc76; font-family: monospace; font-size: 12px; padding: 12px; border-radius: 8px; margin-top: 8px; border: 1px solid var(--md-sys-color-outline-variant); }
+    .logs-container .error { color: #ff6b6b; }
+    .logs-container div { margin-bottom: 4px; }
+    
     </style>
 </head>
 <body>
@@ -648,7 +651,7 @@
             <div class="sidebar-header">
                 <div style="display: flex; align-items: center; gap: 12px; padding: 12px 0;">
                     <h2 style="font-family: 'Lexend', sans-serif; font-size: 20px; font-weight: 500; color: var(--md-sys-color-on-surface); margin: 0;">Chat Log</h2>
-                    <span style="font-family: 'Lexend', sans-serif; font-size: 12px; font-weight: 500; color: var(--md-sys-color-on-surface-variant); background-color: var(--md-sys-color-surface-container-high); padding: 2px 8px; border-radius: 100px; display: inline-flex; align-items: center;">v4.1.7</span>
+                    <span style="font-family: 'Lexend', sans-serif; font-size: 12px; font-weight: 500; color: var(--md-sys-color-on-surface-variant); background-color: var(--md-sys-color-surface-container-high); padding: 2px 8px; border-radius: 100px; display: inline-flex; align-items: center;">v4.2.1</span>
                 </div>
                 <div style="display:flex; gap: 8px;">
                     <button class="icon-btn ripple-surface" onclick="refreshApp()"><span class="material-symbols-rounded">refresh</span></button>
@@ -773,14 +776,27 @@
                 </div>
             </div>
             
+            <!-- SYSTEM LOGS SECTION -->
+            <div class="setting-section" id="logsSection">
+                <div class="setting-title">System Diagnostics</div>
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <h4>Live Server Logs</h4>
+                        <p>Real-time events from your connected instance.</p>
+                    </div>
+                    <label class="switch"><input type="checkbox" id="logsToggle" onchange="toggleLogs()"><span class="slider"></span></label>
+                </div>
+                <div id="logsViewer" class="logs-container hidden"></div>
+            </div>
+
             <div class="setting-section">
                 <div class="setting-title">Help & Support</div>
                 <div id="faqContainer"></div>
                 <div style="margin-top:24px; display:flex; gap:12px;">
-                    <button class="m3-btn filled" style="background:var(--md-sys-color-secondary-container); color:var(--md-sys-color-on-secondary-container); cursor: pointer;" onclick="window.open('https://amit.is-a.dev/logger#faq', '_blank')">View FAQ</button>
+                    <button class="m3-btn filled" style="background:var(--md-sys-color-secondary-container); color:var(--md-sys-color-on-secondary-container); cursor: pointer;" onclick="window.open('https://docs.amit.is-a.dev/whatsapp-logger/faqs/', '_blank')">View FAQ</button>
                 </div>
                 <div style="margin-top:24px; display:flex; gap:12px;">
-                    <button class="m3-btn filled" style="background:var(--md-sys-color-secondary-container); color:var(--md-sys-color-on-secondary-container); cursor: pointer;" onclick="window.open('https://amit.is-a.dev/logger', '_blank')">View Docs</button>
+                    <button class="m3-btn filled" style="background:var(--md-sys-color-secondary-container); color:var(--md-sys-color-on-secondary-container); cursor: pointer;" onclick="window.open('https://docs.amit.is-a.dev/whatsapp-logger/', '_blank')">View Docs</button>
                 </div>
             </div>
             
@@ -930,25 +946,22 @@
         };
 
         const RENDER_BACKEND_URL = ""; 
-        const firebaseConfig = {
-            apiKey: "",
-            authDomain: "",
-            projectId: "",
-            storageBucket: "",
-            messagingSenderId: "",
-            appId: ""
-        };
         
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
         let activeChatId = null;
+        let activeChatIds = [];
         let isCurrentChatGroup = false;
         let deferredPrompt;
         let currentMessages = [];
+        let rawChatsMap = new Map(); // Client-side store for updates
         
+        // --- SSE CONNECTION STATE ---
+        let chatEventSource = null;
+        let chatEventRetryCount = 0;
+        const activeMessageSources = new Map(); // Keep track of open message SSEs
+
         // --- INDEXED DB CACHING ---
         const DB_NAME = 'WPLoggerDB';
-        const DB_VERSION = 2; // Incremented for chat list cache
+        const DB_VERSION = 2; 
         let dbInstance = null;
         let isIdbSupported = true;
 
@@ -978,7 +991,6 @@
                     }
                 };
 
-                // Safety timeout: Prevent infinite hangs on mobile browsers
                 const fallbackTimeout = setTimeout(() => {
                     console.warn('IDB init timed out');
                     isIdbSupported = false;
@@ -1002,7 +1014,6 @@
                         clearTimeout(fallbackTimeout);
                         dbInstance = e.target.result; 
                         
-                        // Close connection if another tab/process requests an upgrade, prevents blocking
                         dbInstance.onversionchange = () => {
                             dbInstance.close();
                             dbInstance = null;
@@ -1018,7 +1029,6 @@
                     };
                     req.onblocked = (e) => {
                         console.warn('IDB init blocked. Waiting for other connections to close...', e);
-                        // We rely on fallbackTimeout if it never unblocks
                     };
                 } catch (e) {
                     clearTimeout(fallbackTimeout);
@@ -1143,7 +1153,6 @@
             navigator.serviceWorker.register('/assets/sw-wpChat.js').catch(err => {
                 console.warn('SW Register Fail:', err);
             });
-            // Reconnect Sync trigger
             window.addEventListener('online', () => {
                 if (navigator.serviceWorker.controller) navigator.serviceWorker.controller.postMessage('sync_on_reconnect');
             });
@@ -1197,16 +1206,13 @@
                 document.getElementById('profileName').value = localStorage.getItem('profileName') || '';
                 document.getElementById('profilePhone').value = localStorage.getItem('profilePhone') || '';
                 
-                // Safely parse BG to prevent querySelector crash
                 const bg = parseInt(localStorage.getItem('chatBg')) || 1;
                 changeBg(bg, false);
                 populateFAQ();
 
-                // Setup Auth & App Routing with smooth transitions
-                const authValid = localStorage.getItem('wp_auth_expiry') > Date.now();
+                const authValid = localStorage.getItem('wp_api_token') && localStorage.getItem('wp_auth_expiry') > Date.now();
                 
                 if (authValid) {
-                    // If auth is valid, fade out the auth screen completely and show the app
                     document.getElementById('auth-screen').style.opacity = '0';
                     
                     setTimeout(() => {
@@ -1228,9 +1234,8 @@
                             document.getElementById('app-layout').classList.add('visible');
                             loadChats();
                         }
-                    }, 400); // Wait for CSS opacity transition
+                    }, 400); 
                 } else {
-                    // If not valid, hide the spinner and reveal the login form
                     document.getElementById('authLoader').classList.add('hidden');
                     document.getElementById('authForm').classList.remove('hidden');
                     document.getElementById('authForm').classList.add('fade-in');
@@ -1489,9 +1494,12 @@
                     body: JSON.stringify({ username: document.getElementById('username').value, password: document.getElementById('password').value })
                 });
                 const data = await response.json();
-                if(data.success) {
+                if(data.success && data.token) {
+                    localStorage.setItem('wp_api_token', data.token);
+                    
                     if(document.getElementById('rememberMe').checked) localStorage.setItem('wp_auth_expiry', Date.now() + (3 * 24 * 60 * 60 * 1000));
-                    else localStorage.setItem('wp_auth_expiry', Date.now() + (1 * 60 * 60 * 1000)); // default 1 hr fallback
+                    else localStorage.setItem('wp_auth_expiry', Date.now() + (1 * 60 * 60 * 1000));
+                    
                     revealApp();
                 } else throw new Error();
             } catch (e) { err.style.opacity = '1'; btn.classList.remove('loading'); btn.disabled = false; }
@@ -1517,7 +1525,7 @@
 
         async function clearAppCacheData() {
             if (confirm("Are you absolutely sure you want to clear all cached data? This will clear your offline cache databases and instantly reload the workspace application.")) {
-                closeSettingsSidebar(); // Call the new close function
+                closeSettingsSidebar();
                 document.getElementById('refreshModal').classList.add('active');
                 document.getElementById('refreshAuthStep').classList.add('hidden');
                 document.getElementById('refreshProgressStep').classList.remove('hidden');
@@ -1543,11 +1551,11 @@
         function saveProfile() { localStorage.setItem('profileName', document.getElementById('profileName').value); localStorage.setItem('profilePhone', document.getElementById('profilePhone').value); }
         function populateFAQ() {
             const faqs = [
-                {q: "Is this secure?", a: "Yes, data lives in your private Firebase. No one else can access it."},
+                {q: "Is this secure?", a: "Yes, data is secured on your own custom backend server and access is guarded by your API Token."},
                 {q: "Does it track deleted messages?", a: "Yes, once a message is received by the server, it is logged forever, even if the sender deletes it."},
                 {q: "Does my phone need to be online?", a: "No. Once linked, your Render server handles logging even if your phone is powered off."},
                 {q: "Is this legal?", a: "The tool uses standard WhatsApp Web protocols to function as a linked device. It is intended for personal archiving of your own conversations."},
-                {q: "Does it save photos/videos?", a: "No. To keep the project free (Firebase offers limited storage), the logger only saves text content. Media files would fill up your free tier storage very quickly."},
+                {q: "Does it save photos/videos?", a: "No. To keep the project free, the logger only saves text content. Media files would fill up your free tier storage very quickly."},
                 {q: "Does it save View Once messages?", a: "No. WhatsApp does not send the content of `View Once` media to linked devices/web clients, so the logger cannot see them."}
             ];
             const container = document.getElementById('faqContainer');
@@ -1568,7 +1576,6 @@
             
             const input = document.getElementById('msgSearchInput');
             if (searchContainer.classList.contains('hidden')) {
-                // Clear and trigger input event to reset highlights when closed
                 input.value = '';
                 input.dispatchEvent(new Event('input'));
             } else {
@@ -1583,7 +1590,6 @@
             document.querySelectorAll('.msg-bubble').forEach(b => {
                 const textDiv = b.querySelector('.msg-text'); 
                 if(textDiv) {
-                    // Back up the original HTML on first search so we don't destroy structure
                     if (!textDiv.hasAttribute('data-orig')) {
                         textDiv.setAttribute('data-orig', textDiv.innerHTML);
                     }
@@ -1593,7 +1599,6 @@
                     
                     if(term && rawText.toLowerCase().includes(term)) {
                         b.style.display = 'flex';
-                        // Negative lookahead regex: Highlights term ONLY if it's outside of HTML tags (<...>)
                         const safeTerm = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
                         const regex = new RegExp(`(?![^<]*>)(${safeTerm})`, 'gi');
                         
@@ -1601,20 +1606,21 @@
                         count++;
                     } else {
                         b.style.display = term ? 'none' : 'flex';
-                        textDiv.innerHTML = originalHTML; // Restore clean HTML
+                        textDiv.innerHTML = originalHTML; 
                     }
                 }
             });
             document.getElementById('searchCount').innerText = term ? `${count} found` : '';
         });
 
+        // --- SSE: CHATS LIST ---
         async function loadChats() {
             const list = document.getElementById('contactList'); 
+            const token = localStorage.getItem('wp_api_token');
+            if(!token) return handleLogout();
             
-            // Render initial cache instantly before networking kicks in
             const cachedChats = await getCachedChats();
             if (cachedChats && cachedChats.length > 0) {
-                // Ensure it's correctly sorted descending by activity in cache
                 cachedChats.sort((a,b) => b.lastActive - a.lastActive);
                 renderChatList(cachedChats);
             } else {
@@ -1622,35 +1628,87 @@
                 for(let i=0; i<5; i++) list.innerHTML += `<div class="skel-contact fade-in"><div class="skeleton skel-avatar"></div><div class="skel-text-col"><div class="skeleton" style="width:60%; height:16px;"></div><div class="skeleton" style="width:40%; height:12px;"></div></div></div>`;
             }
 
-            if (!navigator.onLine) return; // Skip snapshot if offline
+            if (!navigator.onLine) return; 
 
-            // Prevent duplicating listeners
-            if(window.chatListUnsub) window.chatListUnsub();
+            if (chatEventSource) {
+                chatEventSource.close();
+                chatEventSource = null;
+            }
 
-            // Use real-time listener instead of one-time .get()
-            window.chatListUnsub = db.collection('Chats').onSnapshot(async snap => {
-                const groups = {};
-                const excluded = [];
+            function connectChatsStream() {
+                chatEventSource = new EventSource(`${RENDER_BACKEND_URL}/api/chats/stream?token=${token}`);
 
-                snap.forEach(doc => {
-                    const d = doc.data();
-                    if (!d.lastActive || excluded.includes(doc.id)) return;
-                    const phone = d.phoneNumber || doc.id.split('@')[0];
-                    if (!groups[phone]) groups[phone] = { main: {id:doc.id, ...d}, ids: [doc.id] };
-                    else {
-                        groups[phone].ids.push(doc.id);
-                        if (d.lastActive > groups[phone].main.lastActive) groups[phone].main = {id:doc.id, ...d};
+                chatEventSource.addEventListener('initial', async (e) => {
+                    chatEventRetryCount = 0;
+                    try {
+                        const rawChats = JSON.parse(e.data);
+                        // Normalize subIds to ids to prevent silent crashes
+                        const chats = rawChats.map(g => ({ ...g, ids: g.subIds || g.ids }));
+                        
+                        rawChatsMap.clear();
+                        chats.forEach(g => {
+                            if (g.ids) {
+                                g.ids.forEach(id => {
+                                    rawChatsMap.set(id, { id: id, lastActive: g.lastActive, phoneNumber: g.phoneNumber, customName: g.customName, displayName: g.displayName, preview: g.preview });
+                                });
+                            }
+                        });
+                        
+                        chats.sort((a,b) => (b.lastActive || 0) - (a.lastActive || 0));
+                        await saveCachedChats(chats);
+                        renderChatList(chats);
+                    } catch (err) {
+                        console.error("Chat list initial parse error:", err);
                     }
                 });
 
-                // Sort descending by time
-                const chats = Object.values(groups).map(g => ({...g.main, ids: g.ids})).sort((a,b) => b.lastActive - a.lastActive);
-                
-                await saveCachedChats(chats);
-                renderChatList(chats);
-            }, err => { 
-                console.error("Chat list sync error:", err); 
-            });
+                chatEventSource.addEventListener('update', async (e) => {
+                    try {
+                        const changes = JSON.parse(e.data);
+                        let needsRebuild = false;
+                        
+                        changes.forEach(change => {
+                            if (change.type === 'added' || change.type === 'modified') {
+                                rawChatsMap.set(change.doc.id, change.doc);
+                                needsRebuild = true;
+                            } else if (change.type === 'removed') {
+                                rawChatsMap.delete(change.doc.id);
+                                needsRebuild = true;
+                            }
+                        });
+                        
+                        if (needsRebuild) {
+                            const groups = {};
+                            rawChatsMap.forEach((d, docId) => {
+                                const phone = d.phoneNumber || docId.split('@')[0];
+                                if (!groups[phone]) {
+                                    groups[phone] = { main: { id: docId, ...d }, ids: [docId] };
+                                } else {
+                                    groups[phone].ids.push(docId);
+                                    if ((d.lastActive || 0) > (groups[phone].main.lastActive || 0)) {
+                                        groups[phone].main = { id: docId, ...d };
+                                    }
+                                }
+                            });
+                            
+                            const chats = Object.values(groups).map(g => ({...g.main, ids: g.ids})).sort((a,b) => b.lastActive - a.lastActive);
+                            await saveCachedChats(chats);
+                            renderChatList(chats);
+                        }
+                    } catch (err) {
+                        console.error("Chat list update parse error:", err);
+                    }
+                });
+
+                chatEventSource.onerror = (err) => {
+                    chatEventSource.close();
+                    chatEventRetryCount++;
+                    const backoff = Math.min(1000 * Math.pow(2, chatEventRetryCount), 30000);
+                    setTimeout(connectChatsStream, backoff);
+                };
+            }
+            
+            connectChatsStream();
         }
 
         function renderChatList(chats) {
@@ -1661,24 +1719,19 @@
                 return;
             }
 
-            // Remove empty state or skeleton loading if present
             if (list.querySelector('.skel-contact') || list.innerHTML.includes('No chats found')) {
                 list.innerHTML = '';
             }
 
-            // Track active IDs to clean up stale nodes
             const currentIds = new Set(chats.map(c => 'chat-' + c.id.replace(/[^a-zA-Z0-9]/g, '-')));
 
-            // Since chats array is sorted, iteratively appending them perfectly preserves/updates the physical DOM order
             chats.forEach((c) => {
                 const safeDomId = 'chat-' + c.id.replace(/[^a-zA-Z0-9]/g, '-');
                 let el = document.getElementById(safeDomId);
                 
                 const primaryName = c.customName || c.displayName || c.phoneNumber || c.id;
                 const isGroup = c.id.includes('@g.us');
-                let needsPreviewUpdate = false;
 
-                // Create or Diff DOM Element
                 if (!el) {
                     el = document.createElement('div');
                     el.id = safeDomId;
@@ -1691,48 +1744,48 @@
                                 <span class="chat-time" style="font-size: 12px; color: var(--md-sys-color-on-surface-variant); font-weight: 400; margin-left: 8px; flex-shrink: 0;"></span>
                             </div>
                             <div class="contact-sub preview-text" style="display:flex; align-items:center; margin-top:2px; color:var(--md-sys-color-on-surface-variant);">
-                                <span class="preview-content" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%;">
-                                    <span style="opacity:0.5; font-size: 13px;">Syncing...</span>
-                                </span>
+                                <span class="preview-content" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%;"></span>
                             </div>
                         </div>
                     `;
-                    needsPreviewUpdate = true;
                     el.dataset.lastActive = c.lastActive;
                 } else {
-                    // Update Name/Avatar if backend changed it
                     const nameSpan = el.querySelector('.name-text');
                     if (nameSpan.innerText !== primaryName) {
                         nameSpan.innerText = primaryName;
                         el.querySelector('.avatar').innerHTML = isGroup ? '<span class="material-symbols-rounded">group</span>' : escapeHTML(primaryName[0]).toUpperCase();
                     }
-                    
-                    // Check if new messages arrived in background
-                    const oldActive = parseFloat(el.dataset.lastActive || '0');
-                    if (c.lastActive > oldActive) {
-                        needsPreviewUpdate = true;
-                        el.dataset.lastActive = c.lastActive;
-                    }
+                    el.dataset.lastActive = c.lastActive;
                 }
 
-                // Re-append moves the element to its correct sorted spot at the bottom 
                 list.appendChild(el);
                 
                 el.onclick = () => openChat(c.ids, primaryName, el, isGroup, c.phoneNumber || c.id, c.lastActive);
 
-                // Fetch new message text in the background if needed
-                if (needsPreviewUpdate) {
-                    updatePreview(c, el, isGroup);
+                // Update server-side preview directly without extra network reads
+                const contentSpan = el.querySelector('.preview-content');
+                const timeSpan = el.querySelector('.chat-time');
+
+                if (c.lastActive) {
+                    const msgDate = new Date(c.lastActive * 1000);
+                    const today = new Date();
+                    const isToday = msgDate.toDateString() === today.toDateString();
+                    
+                    timeSpan.innerText = isToday 
+                        ? msgDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+                        : msgDate.toLocaleDateString([], { month: 'short', day: 'numeric' });
+                        
+                    contentSpan.innerHTML = escapeHTML(c.preview || 'Media / Call');
+                } else {
+                    contentSpan.innerHTML = `<span style="font-style: italic; opacity: 0.7;">No messages</span>`;
                 }
 
-                // If this is the currently open chat, dynamically update the header's timestamp
                 if (activeChatId && c.ids.includes(activeChatId)) {
                     const baseId = c.phoneNumber || c.id;
                     document.getElementById('headerId').innerText = `${baseId} • ${formatLastActive(c.lastActive)}`;
                 }
             });
 
-            // Cleanup stale DOM nodes
             Array.from(list.children).forEach(child => {
                 if (child.id && child.id.startsWith('chat-') && !currentIds.has(child.id)) {
                     list.removeChild(child);
@@ -1740,69 +1793,10 @@
             });
         }
 
-        async function updatePreview(c, el, isGroup) {
-            let allMsgs = [];
-            for (const id of c.ids) {
-                const msgs = await getCachedMessages(id);
-                allMsgs = allMsgs.concat(msgs);
-            }
-            
-            allMsgs.sort((a, b) => b.timestamp - a.timestamp);
-            let lastMsg = allMsgs.length > 0 ? allMsgs[0] : null;
-
-            // Background Firebase Fetch
-            if (navigator.onLine && (!lastMsg || c.lastActive > lastMsg.timestamp)) {
-                try {
-                    let latestOnline = null;
-                    for (const id of c.ids) {
-                        const snap = await db.collection('Chats').doc(id).collection('Messages')
-                            .orderBy('timestamp', 'desc').limit(1).get();
-                        
-                        if (!snap.empty) {
-                            const data = snap.docs[0].data();
-                            data.chatId = id; 
-                            if (!latestOnline || data.timestamp > latestOnline.timestamp) {
-                                latestOnline = data;
-                            }
-                        }
-                    }
-                    if (latestOnline && (!lastMsg || latestOnline.timestamp > lastMsg.timestamp)) {
-                        lastMsg = latestOnline;
-                    }
-                } catch(err) {
-                    console.warn("Failed fetching realtime preview snippet", err);
-                }
-            }
-            
-            const contentSpan = el.querySelector('.preview-content');
-            const timeSpan = el.querySelector('.chat-time');
-
-            if (lastMsg) {
-                const msgDate = new Date(lastMsg.timestamp * 1000);
-                const today = new Date();
-                const isToday = msgDate.toDateString() === today.toDateString();
-                
-                timeSpan.innerText = isToday 
-                    ? msgDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
-                    : msgDate.toLocaleDateString([], { month: 'short', day: 'numeric' });
-
-                let prefix = '';
-                if (lastMsg.fromMe) {
-                    prefix = `<span class="material-symbols-rounded" style="font-size: 16px; vertical-align: text-bottom; margin-right: 4px; color: var(--md-sys-color-outline);">done_all</span>`;
-                } else if (isGroup && lastMsg.senderName && lastMsg.senderName !== "Unknown") {
-                    prefix = `<span style="font-weight: 500;">${escapeHTML(lastMsg.senderName)}:</span> `;
-                }
-                
-                const safePreviewText = escapeHTML(lastMsg.text || 'Media');
-                contentSpan.innerHTML = `${prefix}${safePreviewText}`;
-            } else {
-                contentSpan.innerHTML = `<span style="font-style: italic; opacity: 0.7;">No messages</span>`;
-            }
-        }
-
-        // --- UPDATED OPEN CHAT: DELTA SYNC + IDB + CINEMATIC UI ---
+        // --- SSE: MESSAGES SYNC ---
         async function openChat(ids, name, el, isGroup, displayId, lastActive) {
             activeChatId = ids[0];
+            activeChatIds = ids;
             isCurrentChatGroup = isGroup;
             document.getElementById('headerName').innerText = name;
             document.getElementById('chatHeaderContent').style.opacity = '1';
@@ -1810,6 +1804,9 @@
             const timeStr = lastActive ? formatLastActive(lastActive) : "Online";
             document.getElementById('headerId').innerText = `${displayId} • ${timeStr}`;
             document.getElementById('headerAvatar').innerHTML = isGroup ? `<span class="material-symbols-rounded">group</span>` : escapeHTML(name[0]).toUpperCase();
+            
+            const token = localStorage.getItem('wp_api_token');
+            if(!token) return handleLogout();
 
             if (window.matchMedia('(max-width: 768px)').matches) {
                 window.history.pushState({chatOpen: true}, "");
@@ -1817,17 +1814,18 @@
                 document.getElementById('chatArea').classList.add('active');
             }
 
-            if(window.unsub) window.unsub.forEach(u => u());
-            window.unsub = [];
+            // Cleanup old connections
+            activeMessageSources.forEach((source, key) => {
+                source.close();
+                activeMessageSources.delete(key);
+            });
             
             const container = document.getElementById('messagesContainer');
             const spinnerWrap = document.getElementById('syncSpinnerWrap');
             
-            // Show cinematic sync UI
             spinnerWrap.classList.add('active');
             container.classList.add('syncing');
             
-            // 1. Fetch from Cache
             let cachedMsgs = [];
             for (const id of ids) {
                 const msgs = await getCachedMessages(id);
@@ -1837,79 +1835,101 @@
             const msgsMap = new Map();
             cachedMsgs.forEach(m => msgsMap.set(m.id, m));
             
-            // Render Cache Immediately
             if (cachedMsgs.length > 0) {
                 renderMsgs(msgsMap);
-                setTimeout(() => scrollToBottom('auto'), 50); // Instantly jump to bottom on load
+                setTimeout(() => scrollToBottom('auto'), 50); 
             } else {
                 container.innerHTML = `<div class="skel-msg-group"><div class="skeleton skel-bubble skel-left"></div><div class="skeleton skel-bubble skel-right" style="width:60%"></div><div class="skeleton skel-bubble skel-left" style="width:30%"></div></div>`;
             }
 
-            // 2. Delta Sync with Firebase
             let lastTs = 0;
-            // Prevent cache poisoning by ensuring a baseline cache size before using delta sync.
-            // If the cache only has 1 or 2 messages, it forces a full fetch to auto-heal the chat.
             if (cachedMsgs.length >= 5) {
                 lastTs = Math.max(...cachedMsgs.map(m => m.timestamp));
             }
             
-            // Artificial delay to let spinner animation glide smoothly if cache was instant
             await new Promise(r => setTimeout(r, 400));
             
             let pendingSyncs = ids.length;
 
             ids.forEach(id => {
-                let query = db.collection('Chats').doc(id).collection('Messages').orderBy('timestamp');
-                if (lastTs > 0) {
-                    query = query.where('timestamp', '>', lastTs);
-                }
+                let retryCount = 0;
+                
+                function connectMsgStream() {
+                    const source = new EventSource(`${RENDER_BACKEND_URL}/api/messages/stream?chatId=${id}&since=${lastTs}&token=${token}`);
+                    activeMessageSources.set(id, source);
 
-                let isFirstSync = true;
-                window.unsub.push(query.onSnapshot(async snap => {
-                    let isNew = false;
-                    const newToCache = [];
-                    snap.forEach(doc => {
-                        const data = doc.data();
-                        data.chatId = id; 
-                        msgsMap.set(data.id, data);
-                        newToCache.push(data);
-                        isNew = true;
+                    let isFirstSync = true;
+                    
+                    const processPayload = async (dataArray, eventType) => {
+                        let isNew = false;
+                        const newToCache = [];
+                        
+                        dataArray.forEach(item => {
+                            // Unified parser since payload structures vary between initial (raw data) vs update (change docs)
+                            const data = eventType === 'initial' ? item : item.doc;
+                            
+                            // Ignore 'removed' events. This is an append-only logger, and ignoring removals prevents
+                            // sliding-window bugs where the backend unloads old messages from memory/cache.
+                            if (eventType === 'update' && item.type === 'removed') return;
+                            
+                            data.chatId = id; 
+                            msgsMap.set(data.id, data);
+                            newToCache.push(data);
+                            isNew = true;
+                        });
+                        
+                        const c = document.getElementById('messagesContainer');
+                        const wasAtBottom = (c.scrollHeight - c.scrollTop - c.clientHeight) <= 100;
+
+                        if (newToCache.length > 0) await saveCachedMessages(newToCache);
+                        
+                        if (isNew || cachedMsgs.length === 0) {
+                            renderMsgs(msgsMap);
+                            
+                            if (isFirstSync || wasAtBottom) {
+                                setTimeout(() => scrollToBottom(isFirstSync ? 'auto' : 'smooth'), 50);
+                            } else if (!isFirstSync && isNew && !wasAtBottom) {
+                                document.getElementById('newMsgBadge').classList.remove('hidden');
+                                document.getElementById('scrollFab').classList.add('visible');
+                            }
+                        }
+                        
+                        if (isFirstSync) {
+                            isFirstSync = false;
+                            pendingSyncs--;
+                            if (pendingSyncs <= 0) {
+                                spinnerWrap.classList.remove('active');
+                                container.classList.remove('syncing');
+                            }
+                        }
+                    };
+
+                    source.addEventListener('initial', (e) => {
+                        retryCount = 0;
+                        try { processPayload(JSON.parse(e.data), 'initial'); } catch(err){ console.error("Message stream initial parse error:", err); }
+                    });
+
+                    source.addEventListener('update', (e) => {
+                        try { processPayload(JSON.parse(e.data), 'update'); } catch(err){ console.error("Message stream update parse error:", err); }
                     });
                     
-                    const c = document.getElementById('messagesContainer');
-                    const wasAtBottom = (c.scrollHeight - c.scrollTop - c.clientHeight) <= 100;
-
-                    if (newToCache.length > 0) await saveCachedMessages(newToCache);
-                    if (isNew || cachedMsgs.length === 0) {
-                        renderMsgs(msgsMap);
+                    source.onerror = (err) => {
+                        source.close();
+                        activeMessageSources.delete(id);
                         
-                        if (isFirstSync || wasAtBottom) {
-                            setTimeout(() => scrollToBottom(isFirstSync ? 'auto' : 'smooth'), 50);
-                        } else if (!isFirstSync && isNew && !wasAtBottom) {
-                            document.getElementById('newMsgBadge').classList.remove('hidden');
-                            document.getElementById('scrollFab').classList.add('visible');
+                        // Prevent leaking loading spinners
+                        if (isFirstSync) {
+                            isFirstSync = false; pendingSyncs--;
+                            if (pendingSyncs <= 0) { spinnerWrap.classList.remove('active'); container.classList.remove('syncing'); }
                         }
-                    }
-                    
-                    if (isFirstSync) {
-                        isFirstSync = false;
-                        pendingSyncs--;
-                        if (pendingSyncs <= 0) {
-                            spinnerWrap.classList.remove('active');
-                            container.classList.remove('syncing');
-                        }
-                    }
-                }, err => {
-                    console.error("Sync error:", err);
-                    if (isFirstSync) {
-                        isFirstSync = false;
-                        pendingSyncs--;
-                        if (pendingSyncs <= 0) {
-                            spinnerWrap.classList.remove('active');
-                            container.classList.remove('syncing');
-                        }
-                    }
-                }));
+                        
+                        retryCount++;
+                        const backoff = Math.min(1000 * Math.pow(2, retryCount), 30000);
+                        setTimeout(() => { if (activeChatId === ids[0]) connectMsgStream(); }, backoff);
+                    };
+                }
+                
+                connectMsgStream();
             });
         }
 
@@ -1950,9 +1970,7 @@
                 const showSenderName = !m.fromMe && isCurrentChatGroup && m.senderName && m.senderName !== "Unknown" && !isSamePrev; 
                 div.id = `msg-${m.timestamp}`; div.dataset.date = dateStr;
 
-                // Escape all text first so HTML code isn't rendered
                 const safeText = escapeHTML(m.text || '');
-                // Find URLs and wrap them in an anchor tag safely
                 const urlRegex = /(https?:\/\/[^\s]+)/g;
                 const formattedText = safeText ? safeText.replace(urlRegex, url => `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: var(--md-sys-color-primary); text-decoration: underline;">${url}</a>`) : '';
 
@@ -1961,7 +1979,6 @@
             });
 
             if(currentGroup) container.appendChild(currentGroup);
-            // Auto-scroll logic is now handled strictly in openChat based on user's scroll position
         }
 
         function scrollToBottom(behavior = 'auto') {
@@ -2000,19 +2017,68 @@
             } else document.getElementById('notFoundModal').classList.add('active');
         }
 
-        function handleLogout() { localStorage.removeItem('wp_auth_expiry'); localStorage.removeItem('wp_app_pin'); localStorage.removeItem('wp_app_bio'); location.reload(); }
-        function closeChatMobile() { window.history.back(); }
+        function handleLogout() { localStorage.removeItem('wp_api_token'); localStorage.removeItem('wp_auth_expiry'); localStorage.removeItem('wp_app_pin'); localStorage.removeItem('wp_app_bio'); location.reload(); }
+        
+        function closeChatMobile() { 
+            window.history.back(); 
+            // Cleanup source on unmount
+            activeMessageSources.forEach((source, key) => {
+                source.close();
+                activeMessageSources.delete(key);
+            });
+            activeChatId = null;
+        }
+        
         window.addEventListener('popstate', () => { document.getElementById('chatArea').classList.remove('remove'); document.getElementById('chatArea').classList.remove('active'); });
         
-        function downloadChat() {
-            if(!currentMessages.length) return;
-            const text = currentMessages.map(m => `[${new Date(m.timestamp*1000).toLocaleString()}] ${m.senderName}: ${m.text}`).join('\n');
-            const blob = new Blob([text], {type:'text/plain'});
-            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'chat.txt'; a.click();
+        async function downloadChat() {
+            if(!activeChatId || !activeChatIds || activeChatIds.length === 0) return;
+            const token = localStorage.getItem('wp_api_token');
+            try {
+                const res = await fetch(`${RENDER_BACKEND_URL}/api/export?token=${token}`, { headers: { 'Authorization': `Bearer ${token}` } });
+                
+                if (res.ok) {
+                    const exportData = await res.json();
+                    
+                    let allMessages = [];
+                    activeChatIds.forEach(id => {
+                        if (exportData.messages[id]) {
+                            allMessages = allMessages.concat(exportData.messages[id]);
+                        }
+                    });
+                    
+                    if (allMessages.length === 0) return;
+                    
+                    // Sort by time
+                    allMessages.sort((a,b) => a.timestamp - b.timestamp);
+                    const text = allMessages.map(m => `[${new Date(m.timestamp*1000).toLocaleString()}] ${m.senderName}: ${m.text}`).join('\n');
+                    
+                    const blob = new Blob([text], {type:'text/plain'});
+                    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'chat.txt'; a.click();
+                }
+            } catch (err) {
+                console.error("Export download error:", err);
+            }
         }
         
         function showRenameModal() { if(!activeChatId) return; document.getElementById('renameModal').classList.add('active'); document.getElementById('renameInput').value = document.getElementById('headerName').innerText; document.getElementById('chatMenu').classList.remove('show'); }
-        async function saveRename() { const name = document.getElementById('renameInput').value; if(name) { await db.collection('Chats').doc(activeChatId).set({customName: name}, {merge:true}); document.getElementById('headerName').innerText = name; closeModal('renameModal'); loadChats(); } }
+        
+        async function saveRename() { 
+            const name = document.getElementById('renameInput').value; 
+            const token = localStorage.getItem('wp_api_token');
+            if(name && token) { 
+                await fetch(`${RENDER_BACKEND_URL}/api/rename`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ id: activeChatId, customName: name })
+                });
+                
+                document.getElementById('headerName').innerText = name; 
+                closeModal('renameModal'); 
+                // Will automatically refresh in sidebar via SSE update hook
+            } 
+        }
+        
         function showLogoutModal() { document.getElementById('logoutModal').classList.add('active'); }
 
         document.getElementById('searchInput').addEventListener('input', (e) => {
@@ -2053,6 +2119,9 @@
 
                 if (!data.success) throw new Error();
 
+                // Re-sync Token to be safe
+                if (data.token) localStorage.setItem('wp_api_token', data.token);
+
                 document.getElementById('refreshAuthStep').classList.add('hidden');
                 document.getElementById('refreshProgressStep').classList.remove('hidden');
                 
@@ -2079,14 +2148,15 @@
                 updateRefreshProgress(10, "Clearing local storage...");
                 const theme = localStorage.getItem('theme');
                 const bg = localStorage.getItem('chatBg');
+                const tkn = localStorage.getItem('wp_api_token');
                 localStorage.clear();
                 if(theme) localStorage.setItem('theme', theme);
                 if(bg) localStorage.setItem('chatBg', bg);
+                if(tkn) localStorage.setItem('wp_api_token', tkn);
 
                 updateRefreshProgress(15, "Wiping database...");
                 if(dbInstance) { dbInstance.close(); dbInstance = null; }
                 
-                // Slight delay helps mobile OS clear file locks before deletion
                 await new Promise(r => setTimeout(r, 100));
 
                 await new Promise(res => { 
@@ -2095,13 +2165,11 @@
                         req.onsuccess = res; 
                         req.onerror = res; 
                         req.onblocked = () => {
-                            console.warn("Delete DB blocked by another process.");
                             res();
                         };
                     } catch(e) { res(); }
                 });
                 
-                // Slight delay before reopening
                 await new Promise(r => setTimeout(r, 200));
                 
                 updateRefreshProgress(25, "Rebuilding database...");
@@ -2109,18 +2177,23 @@
                 await initIndexedDB();
 
                 updateRefreshProgress(30, "Fetching chat list...");
-                const snap = await db.collection('Chats').get();
+                
+                // HTTP Fetch replacement for hard-sync only
+                const token = localStorage.getItem('wp_api_token');
+                const res = await fetch(`${RENDER_BACKEND_URL}/api/export`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const exportData = await res.json();
+                
+                const chatsData = Object.values(exportData.chats);
                 const groups = {};
-                const excluded = ['917278779512@s.whatsapp.net', '201554426618024@lid'];
+                const excluded = [''];
 
-                snap.forEach(doc => {
-                    const d = doc.data();
-                    if (!d.lastActive || excluded.includes(doc.id)) return;
-                    const phone = d.phoneNumber || doc.id.split('@')[0];
-                    if (!groups[phone]) groups[phone] = { main: {id:doc.id, ...d}, ids: [doc.id] };
+                chatsData.forEach(d => {
+                    if (!d.lastActive || excluded.includes(d.id)) return;
+                    const phone = d.phoneNumber || d.id.split('@')[0];
+                    if (!groups[phone]) groups[phone] = { main: d, ids: [d.id] };
                     else {
-                        groups[phone].ids.push(doc.id);
-                        if (d.lastActive > groups[phone].main.lastActive) groups[phone].main = {id:doc.id, ...d};
+                        groups[phone].ids.push(d.id);
+                        if (d.lastActive > groups[phone].main.lastActive) groups[phone].main = d;
                     }
                 });
 
@@ -2135,11 +2208,8 @@
                     updateRefreshProgress(30 + ((done / total) * 60), `Fetching: ${name}...`);
                     
                     for (const id of chat.ids) {
-                        const msgSnap = await db.collection('Chats').doc(id).collection('Messages').get();
-                        const msgs = [];
-                        msgSnap.forEach(doc => {
-                            const data = doc.data(); data.chatId = id; msgs.push(data);
-                        });
+                        const msgs = exportData.messages[id] || [];
+                        msgs.forEach(m => m.chatId = id);
                         if (msgs.length > 0) await saveCachedMessages(msgs);
                     }
                     done++;
@@ -2154,16 +2224,14 @@
                 setTimeout(() => window.location.reload(), 2000);
             }
         }
-        // Function to accurately measure total LocalStorage space occupied
+        
         function calculateLocalStorageUsage() {
             let totalBytes = 0;
             for (let key in localStorage) {
                 if (!localStorage.hasOwnProperty(key)) continue;
-                // Key length + string content value length multiplied by 2 bytes (UTF-16 characters standard layout size)
                 totalBytes += ((key.length + localStorage[key].length) * 2);
             }
             
-            // Format into human readable metric layout outputs
             const sizeInKB = (totalBytes / 1024).toFixed(2);
             const displayElement = document.getElementById('localStorageSizeDisplay');
             
@@ -2175,6 +2243,46 @@
                 }
             }
         }
+
+        // --- OPTIONAL: DIAGNOSTICS LOGS ---
+        let logsInterval = null;
+
+        function toggleLogs() {
+            const isChecked = document.getElementById('logsToggle').checked;
+            const viewer = document.getElementById('logsViewer');
+            const token = localStorage.getItem('wp_api_token');
+            
+            if (isChecked && token) {
+                viewer.classList.remove('hidden');
+                fetchAndRenderLogs(token);
+                logsInterval = setInterval(() => fetchAndRenderLogs(token), 10000);
+            } else {
+                viewer.classList.add('hidden');
+                if (logsInterval) clearInterval(logsInterval);
+            }
+        }
+
+        async function fetchAndRenderLogs(token) {
+            try {
+                const res = await fetch(`${RENDER_BACKEND_URL}/logs?format=json&token=${token}`);
+                if (res.ok) {
+                    const logs = await res.json();
+                    const viewer = document.getElementById('logsViewer');
+                    viewer.innerHTML = '';
+                    
+                    logs.forEach(l => {
+                        const time = new Date(l.timestamp).toLocaleTimeString();
+                        const div = document.createElement('div');
+                        if (l.level === 'error') div.className = 'error';
+                        div.innerText = `[${time}] [${l.level.toUpperCase()}] ${l.message}`;
+                        viewer.appendChild(div);
+                    });
+                    
+                    viewer.scrollTop = viewer.scrollHeight;
+                }
+            } catch (e) {}
+        }
+        
     </script>
 </body>
 </html>
