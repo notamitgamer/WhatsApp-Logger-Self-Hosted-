@@ -2,17 +2,11 @@
 
 A privacy-focused, self-hosted WhatsApp archiving tool. It captures messages (including deleted ones) via a linked device connection and stores them in your own Firebase Firestore database.
 
-> [!WARNING]
-> Kindly upgrade to v4.1.7, issues fixed:
-> - **Authentication Loop (Status 428):** Fixed an issue where new installations would get stuck in a continuous reconnection loop due to a deprecated `printQRInTerminal` setting in the Baileys library.
-> - **QR Code Rendering:** Removed the broken terminal QR generation and ensured the QR code is smoothly routed and rendered directly on the Express web interface.
+>[!TIP]
+> Now you can see the server logs in the frontend by going to `Settings` -> `System Diagnostics` -> Toggle `Live server logs`. Also you can visit `https://your-app.onrender.com/logs` after login to see the logs.
 
-> [!IMPORTANT]
-> **Update Notice**
->
-> I'm trying to build a feature to save media like images, videos, and voice messages — but Firebase's free tier caps storage at 1GB, so it's not viable for that. I'm planning to add this as an optional feature using Hugging Face for storage instead. Messages will continue to be stored in Firebase as before. Frontend and Firebase security are also being upgraded as part of this effort.
->
-> Okay, so, I made the [plan](plan.md).
+> [!WARNING]
+> **Security upgrade in v4.2.1:** versions before v4.2.1 shipped a public Firebase Web SDK config directly in the frontend, which let anyone who viewed the page source read your chat database directly, bypassing login entirely. As of v4.2.1, the frontend never talks to Firestore — it only talks to your Render backend over an authenticated connection (Server-Sent Events, bearer token). If you're on an older version, update and follow the revised Step 1 and Step 4 below, and update your Firestore rules to deny all direct client access.
 
 > [!IMPORTANT]
 > Using this logger is completely safe and will not get your WhatsApp account banned. Here is why:
@@ -21,8 +15,7 @@ A privacy-focused, self-hosted WhatsApp archiving tool. It captures messages (in
 > * **Standard Linked Device:** The tool connects to WhatsApp using the official Multi-Device WebSocket protocol. To WhatsApp's servers, this connection looks exactly like you logging into standard WhatsApp Web on a secondary browser. 
 > * **No User Reports:** The number one cause of bans is other users reporting an account. Since this logger works silently in the background and does not interact with anyone, there is zero risk of being reported.
 
-### Check <a href="https://amit.is-a.dev/logger">guide</a> for detailed installation process. 
-> *i forgot to upgrade the docs to 4.1.7, i need some time to do that.*
+### Check <a href="https://docs.amit.is-a.dev/whatsapp-logger/">guide</a> for detailed installation process. 
 
 ### Important notes:
  * It is recommended to download the **web app (PWA)** after the publication of the webpage for better security and native experience. 
@@ -60,23 +53,16 @@ A privacy-focused, self-hosted WhatsApp archiving tool. It captures messages (in
     * Start in **Production Mode**.
 3.  **Set Security Rules**:
     * Go to the **Rules** tab in Firestore.
-    * Replace the rules with the following (allows anyone to read, but only backend with Admin SDK can write):
+    * Replace the rules with the following. As of v4.2.1, the frontend never talks to Firestore directly — only your Render backend does, via the Admin SDK, which bypasses these rules entirely regardless of what they say. So there's no reason to allow any direct client access:
         ```javascript
         rules_version = '2';
         service cloud.firestore {
           match /databases/{database}/documents {
             match /{document=**} {
-              // 1. Allow Read: Essential for your HTML page to fetch chats.
-              allow read: if true;
-         
-              // 2. Allow Update: Enables the "Rename Chat" feature from the frontend.
-              // This allows updating existing documents (like changing the name)
-              // but prevents creating NEW documents or Deleting them.
-              allow update: if true;
-         
-              // 3. Block Create/Delete: Only the Backend (Render) can create new messages
-              // or delete them. This prevents random people from injecting fake chats.
-              allow create, delete: if false;
+              // Deny all direct client access. The Admin SDK (your Render backend)
+              // bypasses these rules entirely, so this only blocks browsers/apps
+              // that try to read or write Firestore directly with a client SDK.
+              allow read, write: if false;
             }
           }
         }
@@ -85,11 +71,8 @@ A privacy-focused, self-hosted WhatsApp archiving tool. It captures messages (in
     * Go to **Project Settings** (Gear icon) -> **Service accounts**.
     * Click **Generate new private key**.
     * This will download a `.json` file. **Keep this safe.** You will need its content for Render.
-5.  **Get Frontend Configuration**:
-    * Go to **Project Settings** -> **General**.
-    * Scroll down to "Your apps" and click the **Web (</>)** icon.
-    * Register app (nickname: "Logger Frontend").
-    * Copy the `firebaseConfig` object (API Key, Project ID, etc.). You will need this for `index.html`.
+
+That's everything you need from Firebase — the frontend doesn't need any Firebase configuration at all.
 
 ---
 
@@ -127,25 +110,16 @@ A privacy-focused, self-hosted WhatsApp archiving tool. It captures messages (in
 
 1.  Download the `index.html` file from this repository.
 2.  Open `index.html` in a text editor (Notepad, VS Code, etc.).
-3.  Locate the Configuration section (around line 675).
+3.  Locate the Configuration section near the top of the `<script>` block.
 4.  **Fill in the details**:
     * `RENDER_BACKEND_URL`: Your Render URL (e.g., `https://your-app.onrender.com` - **No trailing slash**).
-    * `firebaseConfig`: The keys you copied in Step 1.5.
 
     **It should look like this before you edit it:**
     ```javascript
     const RENDER_BACKEND_URL = ""; 
-
-    // Firebase Config
-    const firebaseConfig = {
-        apiKey: "",
-        authDomain: "",
-        projectId: "",
-        storageBucket: "",
-        messagingSenderId: "",
-        appId: ""
-    };
     ```
+
+    That's the only setting needed. As of v4.2.1, the frontend authenticates against your Render backend (`/api/verify`) and gets a session token back, used for every chat/message request over Server-Sent Events. Firebase credentials only ever live on the backend, set in Step 2.
 
 5.  **Deploy the Frontend**:
     * You can host this single file anywhere:
