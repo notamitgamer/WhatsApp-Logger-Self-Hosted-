@@ -5,14 +5,11 @@ A privacy-focused, self-hosted WhatsApp archiving tool. It captures messages (in
 >[!TIP]
 > Now you can see the server logs in the frontend by going to `Settings` -> `System Diagnostics` -> Toggle `Live server logs`. Also you can visit `https://your-app.onrender.com/logs` after login to see the logs.
 
-> [!WARNING]
-> **Security upgrade in v4.2.1:** versions before v4.2.1 shipped a public Firebase Web SDK config directly in the frontend, which let anyone who viewed the page source read your chat database directly, bypassing login entirely. As of v4.2.1, the frontend never talks to Firestore — it only talks to your Render backend over an authenticated connection (Server-Sent Events, bearer token). If you're on an older version, update and follow the revised Step 1 and Step 4 below, and update your Firestore rules to deny all direct client access.
-
 ## Upgrade Notes (v4.2.x)
 
 If you're updating from an older version, here's everything that changed across the v4.2.x line in one place:
 
-* **v4.2.1 — Security fix:** Removed the public Firebase Web SDK config from the frontend (see the warning above). The frontend now only talks to your Render backend, never Firestore directly. Update your Firestore rules to deny all direct client access as shown in Step 1.
+* **v4.2.1 — Security fix:** Removed the public Firebase Web SDK config from the frontend. The frontend now only talks to your Render backend, never Firestore directly. Update your Firestore rules to deny all direct client access as shown in [Step 1](#step-1-firebase-setup-the-database).
 * **v4.2.2 — Real-time sync now covers every chat, not just the one you have open:** Previously, new messages only arrived for a chat you already had open — anything happening in other chats sat on the server until you clicked into them. Now a single sync connection streams updates for *all* chats at once, so incoming messages show up across every contact the moment they arrive, the way WhatsApp itself behaves when your phone comes back online.
 * **v4.2.2 — Full resync with real progress:** `Settings` -> refresh icon -> `Hard Reset` now pulls your entire message history chat-by-chat instead of one giant download, so the progress bar reflects actual messages fetched instead of a rough guess. Use this if you ever open a chat that shows nothing locally even though the server has history for it (e.g. after clearing site data or on a new device/browser).
 * **UI refresh:** Reworked to three selectable themes — Catppuccin Latte (light), Catppuccin Mocha (dark), and a true-black AMOLED theme — replacing the old dark-mode toggle and the multiple chat-background picker. Find it under `Settings` -> `Appearance` -> `Theme`.
