@@ -4,7 +4,8 @@ const { MAX_CONNECTIONS_PER_TOKEN } = require('./config');
 const activeConnections = [];
 const clients = {
     chats: new Set(),
-    messages: new Map()
+    messages: new Map(),
+    sync: new Set() // Global message-sync clients (one connection covers all chats)
 };
 
 function enforceConnectionCeiling(req, res, cleanupFunction) {

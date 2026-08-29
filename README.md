@@ -5,8 +5,14 @@ A privacy-focused, self-hosted WhatsApp archiving tool. It captures messages (in
 >[!TIP]
 > Now you can see the server logs in the frontend by going to `Settings` -> `System Diagnostics` -> Toggle `Live server logs`. Also you can visit `https://your-app.onrender.com/logs` after login to see the logs.
 
-> [!WARNING]
-> **Security upgrade in v4.2.1:** versions before v4.2.1 shipped a public Firebase Web SDK config directly in the frontend, which let anyone who viewed the page source read your chat database directly, bypassing login entirely. As of v4.2.1, the frontend never talks to Firestore — it only talks to your Render backend over an authenticated connection (Server-Sent Events, bearer token). If you're on an older version, update and follow the revised Step 1 and Step 4 below, and update your Firestore rules to deny all direct client access.
+## Upgrade Notes (v4.2.x)
+
+If you're updating from an older version, here's everything that changed across the v4.2.x line in one place:
+
+* **v4.2.1 — Security fix:** Removed the public Firebase Web SDK config from the frontend. The frontend now only talks to your Render backend, never Firestore directly. Update your Firestore rules to deny all direct client access as shown in [Step 1](#step-1-firebase-setup-the-database).
+* **v4.2.2 — Real-time sync now covers every chat, not just the one you have open:** Previously, new messages only arrived for a chat you already had open — anything happening in other chats sat on the server until you clicked into them. Now a single sync connection streams updates for *all* chats at once, so incoming messages show up across every contact the moment they arrive, the way WhatsApp itself behaves when your phone comes back online.
+* **v4.2.2 — Full resync with real progress:** `Settings` -> refresh icon -> `Hard Reset` now pulls your entire message history chat-by-chat instead of one giant download, so the progress bar reflects actual messages fetched instead of a rough guess. Use this if you ever open a chat that shows nothing locally even though the server has history for it (e.g. after clearing site data or on a new device/browser).
+* **UI refresh:** Reworked to three selectable themes — Catppuccin Latte (light), Catppuccin Mocha (dark), and a true-black AMOLED theme — replacing the old dark-mode toggle and the multiple chat-background picker. Find it under `Settings` -> `Appearance` -> `Theme`.
 
 > [!IMPORTANT]
 > Using this logger is completely safe and will not get your WhatsApp account banned. Here is why:
@@ -90,6 +96,33 @@ That's everything you need from Firebase — the frontend doesn't need any Fireb
     * `AUTH_PASS`: Set a strong password. This creates the lock for your logger.
 7.  Click **Create Web Service**.
 8.  Wait for the deployment to finish. Render will give you a URL like `https://your-app.onrender.com`.
+
+### Excluding specific chats from logging
+
+If there are chats you don't want logged at all — a bot, a broadcast/status JID, a business account — edit `EXCLUDED_JIDS` in `src/config.js` on your fork before deploying:
+
+```javascript
+// --- CONFIGURATION ---
+const PORT = process.env.PORT || 3000;
+const AUTH_USER = process.env.AUTH_USER;
+const AUTH_PASS = process.env.AUTH_PASS;
+const MAX_LOGS = 500;
+const MAX_CONNECTIONS_PER_TOKEN = 15;
+const VERSION = '4.x.x';
+const EXCLUDED_JIDS = new Set(['']);
+
+module.exports = {
+    PORT,
+    AUTH_USER,
+    AUTH_PASS,
+    MAX_LOGS,
+    MAX_CONNECTIONS_PER_TOKEN,
+    VERSION,
+    EXCLUDED_JIDS
+};
+```
+
+`EXCLUDED_JIDS` is a set of full JIDs (the `...@s.whatsapp.net` / `...@g.us` / `...@lid` identifiers, not just a phone number) that are skipped entirely — they won't be cached, streamed, or included in exports. It ships empty by default. You can find a chat's exact JID from the live server logs (`Settings` -> `System Diagnostics`) the first time it logs a message, then add it here, e.g. `new Set(['917278779512@s.whatsapp.net', '201554426618024@lid'])`, and redeploy.
 
 ---
 

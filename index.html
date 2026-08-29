@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WhatsApp Logger v4.2.1</title>
+    <title>WhatsApp Logger</title>
     
     <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="/assets/manifest-wpChat.json">
     <meta name="theme-color" content="#006C4C">
     
     <!-- SVG Favicon -->
-    <link rel="icon" href="icon.svg">
+    <link rel="icon" href="/assets/icon.svg">
 
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,42 +29,41 @@
         }
     </script>
 
-    <!-- FIREBASE SDKS REMOVED -->
-
     <style>
+        /* Base / Default Theme (Catppuccin Latte - Light) */
         :root {
-            /* Light Theme Tokens */
-            --md-sys-color-primary: #006C4C;
-            --md-sys-color-on-primary: #FFFFFF;
-            --md-sys-color-primary-container: #89F8C7;
-            --md-sys-color-on-primary-container: #002114;
+            --md-sys-color-primary: #40a02b; /* Green */
+            --md-sys-color-on-primary: #eff1f5; /* Base */
+            --md-sys-color-primary-container: #a6d189; /* Lighter Green approximation for container */
+            --md-sys-color-on-primary-container: #1e1e2e; 
             
-            --md-sys-color-secondary: #4D6357;
-            --md-sys-color-on-secondary: #FFFFFF;
-            --md-sys-color-secondary-container: #CFE9D9;
-            --md-sys-color-on-secondary-container: #092016;
+            --md-sys-color-secondary: #179299; /* Teal */
+            --md-sys-color-on-secondary: #eff1f5;
+            --md-sys-color-secondary-container: #99d1db; /* Sky used as container */
+            --md-sys-color-on-secondary-container: #4c4f69;
             
-            --md-sys-color-surface: #FBFDF9;
-            --md-sys-color-surface-dim: #D9DBD9;
-            --md-sys-color-surface-container: #ECEEEB;
-            --md-sys-color-surface-container-high: #E6E8E5;
-            --md-sys-color-surface-container-highest: #E1E3E0;
+            --md-sys-color-surface: #eff1f5; /* Base */
+            --md-sys-color-surface-dim: #e6e9ef; /* Mantle */
+            --md-sys-color-surface-container: #dce0e8; /* Crust */
+            --md-sys-color-surface-container-high: #ccd0da; /* Surface0 */
+            --md-sys-color-surface-container-highest: #bcc0cc; /* Surface1 */
             
-            --md-sys-color-on-surface: #191C1A;
-            --md-sys-color-on-surface-variant: #404944;
-            --md-sys-color-outline: #707974;
-            --md-sys-color-outline-variant: #BFC9C2;
+            --md-sys-color-on-surface: #4c4f69; /* Text */
+            --md-sys-color-on-surface-variant: #5c5f77; /* Subtext1 */
+            --md-sys-color-outline: #8c8fa1; /* Overlay1 */
+            --md-sys-color-outline-variant: #acb0be; /* Surface2 */
 
-            --md-sys-color-error: #BA1A1A;
-            --md-sys-color-error-container: #FFDAD6;
-            --md-sys-color-on-error-container: #410002;
+            --md-sys-color-error: #d20f39; /* Red */
+            --md-sys-color-error-container: #ea76cb; /* Pink approx */
+            --md-sys-color-on-error-container: #eff1f5;
             
-            /* WhatsApp Authentic Colors */
-            --chat-bubble-me: #DCF8C6;
-            --chat-bubble-them: #FFFFFF;
-            --chat-bg-color: #ECE5DD;
-            --chat-bg-image-opacity: 0.08;
-            --search-highlight: #ffeb3b;
+            --chat-bubble-me: #a6d189; /* Green/Primary approx for light */
+            --chat-on-bubble-me: #4c4f69;
+            --chat-bubble-them: #ffffff;
+            --chat-on-bubble-them: #4c4f69;
+            --chat-bg-color: #e6e9ef; /* Mantle */
+            --chat-bg-image-opacity: 0.05;
+            --search-highlight: #df8e1d; /* Yellow */
             
             /* Elevations & Shapes */
             --elevation-1: 0px 1px 3px 1px rgba(0,0,0,0.15), 0px 1px 2px 0px rgba(0,0,0,0.3);
@@ -74,38 +73,77 @@
             --base-font-size: 15px;
         }
 
-        /* Dark Theme Tokens */
-        [data-theme="dark"] {
-            --md-sys-color-primary: #89F8C7;
-            --md-sys-color-on-primary: #003828;
-            --md-sys-color-primary-container: #005138;
-            --md-sys-color-on-primary-container: #89F8C7;
+        /* Dark Theme Tokens (Catppuccin Mocha) */
+        [data-theme="mocha"] {
+            --md-sys-color-primary: #a6e3a1; /* Green */
+            --md-sys-color-on-primary: #1e1e2e; /* Base */
+            --md-sys-color-primary-container: #40a02b; /* Darker green */
+            --md-sys-color-on-primary-container: #a6e3a1;
             
-            --md-sys-color-secondary: #BACCB3;
-            --md-sys-color-on-secondary: #25342D;
-            --md-sys-color-secondary-container: #3B4B43;
-            --md-sys-color-on-secondary-container: #D6E8D8;
+            --md-sys-color-secondary: #94e2d5; /* Teal */
+            --md-sys-color-on-secondary: #1e1e2e;
+            --md-sys-color-secondary-container: #89dceb; /* Sky */
+            --md-sys-color-on-secondary-container: #1e1e2e;
             
-            --md-sys-color-surface: #111412;
-            --md-sys-color-surface-dim: #111412;
-            --md-sys-color-surface-container: #1E211F;
-            --md-sys-color-surface-container-high: #282B29;
-            --md-sys-color-surface-container-highest: #333534;
+            --md-sys-color-surface: #1e1e2e; /* Base */
+            --md-sys-color-surface-dim: #181825; /* Mantle */
+            --md-sys-color-surface-container: #11111b; /* Crust */
+            --md-sys-color-surface-container-high: #313244; /* Surface0 */
+            --md-sys-color-surface-container-highest: #45475a; /* Surface1 */
             
-            --md-sys-color-on-surface: #E2E3DD;
-            --md-sys-color-on-surface-variant: #C2C8C5;
-            --md-sys-color-outline: #8C938F;
-            --md-sys-color-outline-variant: #424945;
+            --md-sys-color-on-surface: #cdd6f4; /* Text */
+            --md-sys-color-on-surface-variant: #bac2de; /* Subtext1 */
+            --md-sys-color-outline: #7f849c; /* Overlay1 */
+            --md-sys-color-outline-variant: #585b70; /* Surface2 */
 
-            --md-sys-color-error: #FFB4AB;
-            --md-sys-color-error-container: #93000A;
-            --md-sys-color-on-error-container: #FFDAD6;
+            --md-sys-color-error: #f38ba8; /* Red */
+            --md-sys-color-error-container: #d20f39; 
+            --md-sys-color-on-error-container: #f38ba8;
             
-            --chat-bubble-me: #005C4B;
-            --chat-bubble-them: #202C33;
-            --chat-bg-color: #0B141A;
+            --chat-bubble-me: #a6e3a1;
+            --chat-on-bubble-me: #1e1e2e;
+            --chat-bubble-them: #313244; /* Surface0 */
+            --chat-on-bubble-them: #cdd6f4;
+            --chat-bg-color: #181825; /* Mantle */
+            --chat-bg-image-opacity: 0.03;
+            --search-highlight: #f9e2af; /* Yellow */
+        }
+        
+        /* True Black / AMOLED Theme */
+        [data-theme="black"] {
+            --md-sys-color-primary: #a6e3a1; 
+            --md-sys-color-on-primary: #000000; 
+            --md-sys-color-primary-container: #40a02b; 
+            --md-sys-color-on-primary-container: #a6e3a1;
+            
+            --md-sys-color-secondary: #94e2d5; 
+            --md-sys-color-on-secondary: #000000;
+            --md-sys-color-secondary-container: #89dceb; 
+            --md-sys-color-on-secondary-container: #000000;
+            
+            /* The real differences for AMOLED */
+            --md-sys-color-surface: #000000;
+            --md-sys-color-surface-dim: #000000; 
+            --md-sys-color-surface-container: #000000; 
+            --md-sys-color-surface-container-high: #1e1e2e; /* Still use Mocha base for slight elevation */
+            --md-sys-color-surface-container-highest: #313244; 
+            
+            --md-sys-color-on-surface: #cdd6f4; 
+            --md-sys-color-on-surface-variant: #bac2de; 
+            --md-sys-color-outline: #7f849c; 
+            --md-sys-color-outline-variant: #585b70; 
+
+            --md-sys-color-error: #f38ba8; 
+            --md-sys-color-error-container: #d20f39; 
+            --md-sys-color-on-error-container: #f38ba8;
+            
+            --chat-bubble-me: #a6e3a1;
+            --chat-on-bubble-me: #000000;
+            --chat-bubble-them: #1e1e2e;
+            --chat-on-bubble-them: #cdd6f4;
+            --chat-bg-color: #000000;
             --chat-bg-image-opacity: 0.05;
-            --search-highlight: #6b6200;
+            --search-highlight: #f9e2af;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -151,33 +189,21 @@
         /* --- AUTH SCREEN --- */
         #auth-screen {
             position: fixed; inset: 0; z-index: 999;
-            background: radial-gradient(circle at 0% 0%, #C1E8FB 0%, transparent 50%), 
-                        radial-gradient(circle at 100% 100%, #89F8C7 0%, transparent 50%), 
-                        #FBFDF9;
+            background-color: var(--md-sys-color-surface-dim);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             padding: 24px; height: 100dvh;
             transition: opacity 0.4s cubic-bezier(0.2, 0, 0, 1);
         }
         
-        [data-theme="dark"] #auth-screen {
-             background: radial-gradient(circle at 0% 0%, #001F29 0%, transparent 50%), 
-                        radial-gradient(circle at 100% 100%, #002114 0%, transparent 50%), 
-                        #111412;
-        }
-        
         .auth-card { 
-            background: rgba(251, 253, 249, 0.7);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            background: var(--md-sys-color-surface);
             border-radius: 28px;
             padding: 32px 24px; 
             width: 90%; max-width: 380px;
             box-shadow: var(--elevation-2);
+            border: 1px solid var(--md-sys-color-outline-variant);
             display: flex; flex-direction: column; gap: 20px;
             position: relative;
-        }
-        
-        [data-theme="dark"] .auth-card {
-            background: rgba(30, 33, 31, 0.7);
         }
 
         .brand-icon { 
@@ -188,8 +214,8 @@
         .brand-icon img { width: 100%; height: 100%; object-fit: contain; }
 
         /* Custom Spinner for the Boot Loader */
-        [data-theme="dark"] #authLoader .spinner { 
-             border-color: rgba(255,255,255,0.1) !important; 
+        #authLoader .spinner { 
+             border-color: rgba(128,128,128,0.2) !important; 
              border-top-color: var(--md-sys-color-primary) !important; 
         }
 
@@ -248,29 +274,50 @@
             border-radius: 4px 4px 0 0; border-bottom: 1px solid var(--md-sys-color-outline);
             transition: background 0.3s; height: 56px;
         }
-        .m3-field:hover { background: rgba(29, 25, 43, 0.08); }
+        .m3-field:hover { background: rgba(128, 128, 128, 0.08); }
         .m3-field:focus-within { border-bottom: 2px solid var(--md-sys-color-primary); }
         .m3-input { width: 100%; height: 100%; padding: 24px 16px 8px 16px; border: none; background: transparent; outline: none; font-size: 16px; color: var(--md-sys-color-on-surface); font-family: inherit; }
         .m3-label { position: absolute; left: 16px; top: 18px; color: var(--md-sys-color-on-surface-variant); font-size: 16px; pointer-events: none; transition: 0.2s cubic-bezier(0.2, 0, 0, 1); }
         .m3-input:focus ~ .m3-label, .m3-input:not(:placeholder-shown) ~ .m3-label { top: 8px; font-size: 12px; color: var(--md-sys-color-primary); }
         .eye-toggle { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); border: none; background: none; cursor: pointer; color: var(--md-sys-color-on-surface-variant); padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
-        .eye-toggle:hover { background: rgba(0,0,0,0.05); color: var(--md-sys-color-on-surface); }
+        .eye-toggle:hover { background: rgba(128,128,128,0.1); color: var(--md-sys-color-on-surface); }
 
         .m3-btn {
             width: 100%; height: 48px; border-radius: 24px; border: none; outline: none; cursor: pointer;
             font-family: 'Lexend', sans-serif; font-weight: 500; font-size: 14px;
             display: flex; align-items: center; justify-content: center; gap: 8px;
             transition: 0.2s; position: relative; overflow: hidden;
+            background: transparent; color: var(--md-sys-color-primary);
         }
         .m3-btn.filled { background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); box-shadow: none; }
-        .m3-btn.filled:hover { box-shadow: var(--elevation-1); }
+        .m3-btn.filled:hover { box-shadow: var(--elevation-1); opacity: 0.9;}
         .m3-btn:disabled { opacity: 0.38; cursor: not-allowed; background: var(--md-sys-color-on-surface); color: var(--md-sys-color-surface); box-shadow: none; }
 
-        .spinner { width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 0.8s linear infinite; display: none; }
+        .spinner { width: 20px; height: 20px; border: 2px solid rgba(128,128,128,0.3); border-radius: 50%; border-top-color: inherit; animation: spin 0.8s linear infinite; display: none; }
         .m3-btn.loading .btn-text { visibility: hidden; }
         .m3-btn.loading .btn-icon { display: none; }
         .m3-btn.loading .spinner { display: block; position: absolute; }
         @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .m3-select {
+            appearance: none;
+            width: 100%; height: 56px;
+            background: var(--md-sys-color-surface-container-highest);
+            border: none; border-bottom: 1px solid var(--md-sys-color-outline);
+            border-radius: 4px 4px 0 0;
+            padding: 8px 16px;
+            color: var(--md-sys-color-on-surface);
+            font-family: inherit; font-size: 16px;
+            outline: none; cursor: pointer;
+        }
+        .m3-select:focus { border-bottom: 2px solid var(--md-sys-color-primary); }
+        .select-wrapper { position: relative; }
+        .select-wrapper::after {
+            content: 'expand_more';
+            font-family: 'Material Symbols Rounded';
+            position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+            color: var(--md-sys-color-on-surface-variant); pointer-events: none;
+        }
 
         /* --- APP LAYOUT --- */
         #app-layout { display: flex; width: 100%; height: 100%; max-width: 1600px; background: var(--md-sys-color-surface); opacity: 0; transition: opacity 0.6s ease-in-out; visibility: hidden; }
@@ -296,7 +343,7 @@
 
         /* CHAT AREA */
         .chat-area { flex: 1; display: flex; flex-direction: column; position: relative; background-color: var(--chat-bg-color); transition: background-color 0.3s; overflow: hidden; }
-        .chat-bg-pattern { position: absolute; inset: 0; opacity: var(--chat-bg-image-opacity); z-index: 0; pointer-events: none; background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%236e7874' fill-opacity='0.08' fill-rule='evenodd'/%3E%3C/svg%3E"); }
+        .chat-bg-pattern { position: absolute; inset: 0; opacity: var(--chat-bg-image-opacity); z-index: 0; pointer-events: none; background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%236e7874' fill-opacity='1' fill-rule='evenodd'/%3E%3C/svg%3E"); }
         .chat-header { height: 64px; background: var(--md-sys-color-surface); display: flex; align-items: center; padding: 0 16px; border-bottom: 1px solid var(--md-sys-color-outline-variant); z-index: 5; }
         
         .chat-content {
@@ -317,8 +364,8 @@
         }
 
         .msg-bubble { max-width: 80%; padding: 8px 12px; position: relative; font-size: var(--base-font-size); line-height: 1.4; box-shadow: 0 1px 2px rgba(0,0,0,0.1); display: flex; flex-direction: column; animation: scaleIn 0.2s cubic-bezier(0.2, 0.0, 0, 1.0) backwards; }
-        .msg-in { align-self: flex-start; background: var(--chat-bubble-them); border-radius: 0 16px 16px 16px; color: var(--md-sys-color-on-surface); }
-        .msg-out { align-self: flex-end; background: var(--chat-bubble-me); border-radius: 16px 0 16px 16px; color: var(--md-sys-color-on-surface); }
+        .msg-in { align-self: flex-start; background: var(--chat-bubble-them); border-radius: 0 16px 16px 16px; color: var(--chat-on-bubble-them, var(--md-sys-color-on-surface)); }
+        .msg-out { align-self: flex-end; background: var(--chat-bubble-me); border-radius: 16px 0 16px 16px; color: var(--chat-on-bubble-me, var(--md-sys-color-on-surface)); }
         
         .msg-out.group-top { border-bottom-right-radius: 4px; margin-bottom: 2px; }
         .msg-out.group-mid { border-top-right-radius: 4px; border-bottom-right-radius: 4px; margin-bottom: 2px; }
@@ -358,14 +405,10 @@
             border: 1px solid var(--md-sys-color-outline-variant);
         }
         .sync-chip .spinner {
-            border-color: rgba(0,0,0,0.1);
+            border-color: rgba(128,128,128,0.2);
             border-top-color: var(--md-sys-color-primary);
             width: 16px; height: 16px; 
             display: block; position: static;
-        }
-        [data-theme="dark"] .sync-chip .spinner {
-             border-color: rgba(255,255,255,0.1);
-             border-top-color: var(--md-sys-color-primary);
         }
 
         /* Search In Chat */
@@ -426,14 +469,6 @@
         .faq-answer { display: none; padding-bottom: 16px; color: var(--md-sys-color-on-surface-variant); line-height: 1.5; }
         .faq-item.open .faq-answer { display: block; }
 
-        .bg-selector { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
-        .bg-option { height: 60px; border-radius: 8px; cursor: pointer; border: 2px solid transparent; background-size: cover; position: relative; overflow: hidden; }
-        .bg-option.selected { border-color: var(--md-sys-color-primary); }
-        .bg-1 { background-color: #ECE5DD; }
-        .bg-2 { background-color: #d1d7db; }
-        .bg-3 { background-color: #e5ddd5; }
-        .bg-4 { background-color: #ffffff; }
-
         .install-sheet { display: none; }
         .install-card { background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); padding: 16px; border-radius: 12px; margin-bottom: 32px; display: flex; align-items: center; justify-content: space-between; }
         .install-card h4 { margin-bottom: 4px; }
@@ -441,8 +476,7 @@
         .install-card .m3-btn { width: auto; height: 36px; padding: 0 16px; font-size: 14px; white-space: nowrap; flex-shrink: 0; box-shadow: none; }
 
         @media (max-width: 768px) {
-            .sidebar { width: 100%; flex: 1; border-right: none; background: radial-gradient(circle at 0% 0%, #c1e8fb49 0%, transparent 50%), radial-gradient(circle at 100% 100%, #89f8c86b 0%, transparent 50%), #fbfdf96c; }
-            [data-theme="dark"] .sidebar { background: radial-gradient(circle at 0% 0%, #001F29 0%, transparent 50%), radial-gradient(circle at 100% 100%, #002114 0%, transparent 50%), #111412; }
+            .sidebar { width: 100%; flex: 1; border-right: none; }
             .chat-area { position: fixed; inset: 0; z-index: 20; transform: translateX(100%); transition: transform 0.3s; background-color: var(--chat-bg-color); }
             .chat-area.active { transform: translateX(0); }
             .back-btn { display: flex !important; margin-right: 8px; }
@@ -530,8 +564,8 @@
     }
 
     /* Logs view CSS */
-    .logs-container { max-height: 150px; overflow-y: auto; background: #000; color: #a9dc76; font-family: monospace; font-size: 12px; padding: 12px; border-radius: 8px; margin-top: 8px; border: 1px solid var(--md-sys-color-outline-variant); }
-    .logs-container .error { color: #ff6b6b; }
+    .logs-container { max-height: 150px; overflow-y: auto; background: var(--md-sys-color-surface-container); color: var(--md-sys-color-primary); font-family: monospace; font-size: 12px; padding: 12px; border-radius: 8px; margin-top: 8px; border: 1px solid var(--md-sys-color-outline-variant); }
+    .logs-container .error { color: var(--md-sys-color-error); }
     .logs-container div { margin-bottom: 4px; }
     
     </style>
@@ -548,7 +582,7 @@
             
             <!-- Dynamic Initial Loader -->
             <div id="authLoader" style="text-align: center; padding: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 200px;">
-                <div class="spinner" style="display:block; position:static; border-color:rgba(0,0,0,0.1); border-top-color:var(--md-sys-color-primary); width:36px; height:36px;"></div>
+                <div class="spinner" style="display:block; position:static; width:36px; height:36px;"></div>
                 <p style="margin-top:20px; color:var(--md-sys-color-on-surface-variant); font-size: 15px; font-family:'Lexend', sans-serif;">Authenticating session...</p>
             </div>
 
@@ -651,7 +685,7 @@
             <div class="sidebar-header">
                 <div style="display: flex; align-items: center; gap: 12px; padding: 12px 0;">
                     <h2 style="font-family: 'Lexend', sans-serif; font-size: 20px; font-weight: 500; color: var(--md-sys-color-on-surface); margin: 0;">Chat Log</h2>
-                    <span style="font-family: 'Lexend', sans-serif; font-size: 12px; font-weight: 500; color: var(--md-sys-color-on-surface-variant); background-color: var(--md-sys-color-surface-container-high); padding: 2px 8px; border-radius: 100px; display: inline-flex; align-items: center;">v4.2.1</span>
+                    <span style="font-family: 'Lexend', sans-serif; font-size: 12px; font-weight: 500; color: var(--md-sys-color-on-surface-variant); background-color: var(--md-sys-color-surface-container-high); padding: 2px 8px; border-radius: 100px; display: inline-flex; align-items: center;">v4.2.2</span>
                 </div>
                 <div style="display:flex; gap: 8px;">
                     <button class="icon-btn ripple-surface" onclick="refreshApp()"><span class="material-symbols-rounded">refresh</span></button>
@@ -694,14 +728,6 @@
                 <button class="icon-btn" style="width:30px; height:30px;" onclick="toggleChatSearch()"><span class="material-symbols-rounded">close</span></button>
             </div>
 
-            <!-- Cinematic Loading UI -->
-            <div class="sync-spinner-wrapper" id="syncSpinnerWrap">
-                <div class="sync-chip">
-                    <div class="spinner"></div>
-                    <span>Syncing messages...</span>
-                </div>
-            </div>
-
             <div class="chat-bg-pattern"></div>
             
             <div class="chat-content" id="messagesContainer">
@@ -716,6 +742,14 @@
                 <span id="newMsgBadge" class="new-msg-badge hidden"></span>
             </button>
         </main>
+    </div>
+    
+    <!-- Global Sync Indicator -->
+    <div class="sync-spinner-wrapper" id="globalSyncSpinner">
+        <div class="sync-chip">
+            <div class="spinner"></div>
+            <span>Syncing fresh messages...</span>
+        </div>
     </div>
 
     <!-- MODALS SECTION -->
@@ -748,15 +782,20 @@
             
             <div class="setting-section">
                 <div class="setting-title">Appearance</div>
-                <div class="setting-row"><div class="setting-label"><h4>Dark Mode</h4><p>Easier on the eyes</p></div><label class="switch"><input type="checkbox" id="darkModeToggle" onchange="toggleTheme()"><span class="slider"></span></label></div>
-                <div class="setting-row"><div class="setting-label"><h4>Text Size</h4><p>Adjust message font size</p></div><input type="range" min="12" max="20" value="15" oninput="changeFontSize(this.value)"></div>
-                <div class="setting-label" style="margin-bottom:8px"><h4>Chat Wallpaper</h4></div>
-                <div class="bg-selector">
-                    <div class="bg-option bg-1 selected" onclick="changeBg(1)"></div>
-                    <div class="bg-option bg-2" onclick="changeBg(2)"></div>
-                    <div class="bg-option bg-3" onclick="changeBg(3)"></div>
-                    <div class="bg-option bg-4" onclick="changeBg(4)"></div>
+                <div class="setting-row" style="display: block;">
+                    <div class="setting-label" style="margin-bottom: 8px;">
+                        <h4>Theme</h4>
+                        <p>Select your preferred color palette</p>
+                    </div>
+                    <div class="select-wrapper">
+                        <select id="themeSelector" class="m3-select" onchange="changeTheme(this.value)">
+                            <option value="latte">Latte (Light)</option>
+                            <option value="mocha">Mocha (Dark)</option>
+                            <option value="black">Amoled (True Black)</option>
+                        </select>
+                    </div>
                 </div>
+                <div class="setting-row"><div class="setting-label"><h4>Text Size</h4><p>Adjust message font size</p></div><input type="range" min="12" max="20" value="15" oninput="changeFontSize(this.value)"></div>
             </div>
             
             <div class="setting-section">
@@ -793,10 +832,10 @@
                 <div class="setting-title">Help & Support</div>
                 <div id="faqContainer"></div>
                 <div style="margin-top:24px; display:flex; gap:12px;">
-                    <button class="m3-btn filled" style="background:var(--md-sys-color-secondary-container); color:var(--md-sys-color-on-secondary-container); cursor: pointer;" onclick="window.open('https://docs.amit.is-a.dev/whatsapp-logger/faqs/', '_blank')">View FAQ</button>
+                    <button class="m3-btn filled" style="background:var(--md-sys-color-secondary-container); color:var(--md-sys-color-on-secondary-container); cursor: pointer;" onclick="window.open('https://amit.is-a.dev/logger#faq', '_blank')">View FAQ</button>
                 </div>
                 <div style="margin-top:24px; display:flex; gap:12px;">
-                    <button class="m3-btn filled" style="background:var(--md-sys-color-secondary-container); color:var(--md-sys-color-on-secondary-container); cursor: pointer;" onclick="window.open('https://docs.amit.is-a.dev/whatsapp-logger/', '_blank')">View Docs</button>
+                    <button class="m3-btn filled" style="background:var(--md-sys-color-secondary-container); color:var(--md-sys-color-on-secondary-container); cursor: pointer;" onclick="window.open('https://amit.is-a.dev/logger', '_blank')">View Docs</button>
                 </div>
             </div>
             
@@ -952,18 +991,21 @@
         let isCurrentChatGroup = false;
         let deferredPrompt;
         let currentMessages = [];
-        let rawChatsMap = new Map(); // Client-side store for updates
+        let rawChatsMap = new Map(); 
         
         // --- SSE CONNECTION STATE ---
         let chatEventSource = null;
         let chatEventRetryCount = 0;
-        const activeMessageSources = new Map(); // Keep track of open message SSEs
+        
+        let syncEventSource = null;
+        let syncEventRetryCount = 0;
 
         // --- INDEXED DB CACHING ---
         const DB_NAME = 'WPLoggerDB';
         const DB_VERSION = 2; 
         let dbInstance = null;
         let isIdbSupported = true;
+        let maxCachedTimestamp = 0;
 
         function initIndexedDB() {
             return new Promise((resolve) => {
@@ -1028,7 +1070,7 @@
                         safeResolve(); 
                     };
                     req.onblocked = (e) => {
-                        console.warn('IDB init blocked. Waiting for other connections to close...', e);
+                        console.warn('IDB init blocked. Waiting for other connections to close...');
                     };
                 } catch (e) {
                     clearTimeout(fallbackTimeout);
@@ -1050,6 +1092,25 @@
                     req.onsuccess = () => resolve(req.result || []);
                     req.onerror = () => resolve([]);
                 } catch(e) { resolve([]); }
+            });
+        }
+        
+        async function getMaxCachedTimestamp() {
+            if(!isIdbSupported || !dbInstance) return 0;
+            return new Promise((resolve) => {
+                try {
+                    const tx = dbInstance.transaction('messages', 'readonly');
+                    const store = tx.objectStore('messages');
+                    const index = store.index('timestamp');
+                    // Open a cursor going backwards to get the absolute highest timestamp stored
+                    const req = index.openCursor(null, 'prev');
+                    req.onsuccess = (e) => {
+                        const cursor = e.target.result;
+                        if (cursor) resolve(cursor.key);
+                        else resolve(0);
+                    };
+                    req.onerror = () => resolve(0);
+                } catch(e) { resolve(0); }
             });
         }
 
@@ -1199,15 +1260,15 @@
                     document.getElementById('offlineIndicator').classList.remove('hidden');
                 });
 
-                if (localStorage.getItem('theme') === 'dark') {
-                    document.body.setAttribute('data-theme', 'dark');
-                    document.getElementById('darkModeToggle').checked = true;
-                }
+                // Apply saved theme
+                const savedTheme = localStorage.getItem('theme') || 'latte';
+                document.body.setAttribute('data-theme', savedTheme);
+                const themeSelector = document.getElementById('themeSelector');
+                if(themeSelector) themeSelector.value = savedTheme;
+                
                 document.getElementById('profileName').value = localStorage.getItem('profileName') || '';
                 document.getElementById('profilePhone').value = localStorage.getItem('profilePhone') || '';
                 
-                const bg = parseInt(localStorage.getItem('chatBg')) || 1;
-                changeBg(bg, false);
                 populateFAQ();
 
                 const authValid = localStorage.getItem('wp_api_token') && localStorage.getItem('wp_auth_expiry') > Date.now();
@@ -1228,11 +1289,11 @@
                                 initLockScreen(hasPin, useBio);
                             } else {
                                 document.getElementById('app-layout').classList.add('visible');
-                                loadChats();
+                                startAppSync();
                             }
                         } else {
                             document.getElementById('app-layout').classList.add('visible');
-                            loadChats();
+                            startAppSync();
                         }
                     }, 400); 
                 } else {
@@ -1274,6 +1335,12 @@
                 }
             }
         };
+        
+        async function startAppSync() {
+            // Initiate the two main SSE streams
+            loadChats();
+            connectGlobalSyncStream();
+        }
 
         // --- LOCK SCREEN LOGIC ---
         function initLockScreen(hasPin, useBio) {
@@ -1394,7 +1461,7 @@
             isLocked = false;
             document.getElementById('lock-screen').classList.remove('active');
             document.getElementById('app-layout').classList.add('visible');
-            loadChats();
+            startAppSync();
         }
 
         // --- SECURITY SETTINGS ---
@@ -1510,7 +1577,7 @@
              setTimeout(() => {
                  document.getElementById('auth-screen').style.display = 'none';
                  document.getElementById('app-layout').classList.add('visible'); 
-                 loadChats();
+                 startAppSync();
              }, 400);
         }
         
@@ -1534,20 +1601,14 @@
             }
         }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-        function toggleTheme() {
-            const isDark = document.getElementById('darkModeToggle').checked;
-            document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        
+        function changeTheme(themeName) {
+            document.body.setAttribute('data-theme', themeName);
+            localStorage.setItem('theme', themeName);
         }
+
         function changeFontSize(val) { document.documentElement.style.setProperty('--base-font-size', `${val}px`); }
-        function changeBg(id, save=true) {
-            document.querySelectorAll('.bg-option').forEach(el => el.classList.remove('selected'));
-            const colors = ['#ECE5DD', '#d1d7db', '#e5ddd5', '#ffffff'];
-            document.documentElement.style.setProperty('--chat-bg-color', colors[id-1]);
-            const option = document.querySelector(`.bg-${id}`);
-            if(option) option.classList.add('selected');
-            if(save) localStorage.setItem('chatBg', id);
-        }
+        
         function saveProfile() { localStorage.setItem('profileName', document.getElementById('profileName').value); localStorage.setItem('profilePhone', document.getElementById('profilePhone').value); }
         function populateFAQ() {
             const faqs = [
@@ -1792,12 +1853,86 @@
                 }
             });
         }
+        
+        // --- SSE: GLOBAL MESSAGES SYNC ---
+        // Instead of a connection per chat, we open ONE connection globally to pull missing messages
+        async function connectGlobalSyncStream() {
+            const token = localStorage.getItem('wp_api_token');
+            if(!token || !navigator.onLine) return;
+            
+            if(syncEventSource) {
+                syncEventSource.close();
+                syncEventSource = null;
+            }
+            
+            maxCachedTimestamp = await getMaxCachedTimestamp();
+            
+            // Wait slightly for IDB to settle, show small UI if caching up
+            const spinner = document.getElementById('globalSyncSpinner');
+            if(maxCachedTimestamp > 0) spinner.classList.add('active');
+            
+            syncEventSource = new EventSource(`${RENDER_BACKEND_URL}/api/sync/stream?since=${maxCachedTimestamp}&token=${token}`);
+            
+            const handleSyncData = async (dataArray, eventType) => {
+                const newToCache = [];
+                let activeChatUpdated = false;
+                
+                dataArray.forEach(item => {
+                    const data = eventType === 'initial' ? item : item.doc;
+                    if (eventType === 'update' && item.type === 'removed') return;
+                    
+                    // The server must include chatId for this wildcard payload to work
+                    if(!data.chatId) return;
+                    
+                    newToCache.push(data);
+                    
+                    if (activeChatIds && activeChatIds.includes(data.chatId)) {
+                        activeChatUpdated = true;
+                    }
+                });
+                
+                if (newToCache.length > 0) {
+                    await saveCachedMessages(newToCache);
+                    // Update our tracker
+                    const maxTs = Math.max(...newToCache.map(m => m.timestamp || 0));
+                    if (maxTs > maxCachedTimestamp) maxCachedTimestamp = maxTs;
+                }
+                
+                // If the currently open chat received messages, re-render from cache
+                if (activeChatUpdated && activeChatId) {
+                    refreshActiveChatUI();
+                }
+                
+                if (eventType === 'initial') {
+                    spinner.classList.remove('active');
+                }
+            };
+            
+            syncEventSource.addEventListener('initial', (e) => {
+                syncEventRetryCount = 0;
+                try { handleSyncData(JSON.parse(e.data), 'initial'); } catch(err) { console.error("Sync initial err", err); }
+            });
+            
+            syncEventSource.addEventListener('update', (e) => {
+                try { handleSyncData(JSON.parse(e.data), 'update'); } catch(err) { console.error("Sync update err", err); }
+            });
+            
+            syncEventSource.onerror = (err) => {
+                syncEventSource.close();
+                syncEventRetryCount++;
+                spinner.classList.remove('active');
+                const backoff = Math.min(1000 * Math.pow(2, syncEventRetryCount), 60000);
+                setTimeout(connectGlobalSyncStream, backoff);
+            };
+        }
 
-        // --- SSE: MESSAGES SYNC ---
+        // --- LOCAL CHAT UI ---
+        // opening a chat no longer reaches out to the server via SSE directly
         async function openChat(ids, name, el, isGroup, displayId, lastActive) {
             activeChatId = ids[0];
             activeChatIds = ids;
             isCurrentChatGroup = isGroup;
+            
             document.getElementById('headerName').innerText = name;
             document.getElementById('chatHeaderContent').style.opacity = '1';
             
@@ -1805,29 +1940,24 @@
             document.getElementById('headerId').innerText = `${displayId} • ${timeStr}`;
             document.getElementById('headerAvatar').innerHTML = isGroup ? `<span class="material-symbols-rounded">group</span>` : escapeHTML(name[0]).toUpperCase();
             
-            const token = localStorage.getItem('wp_api_token');
-            if(!token) return handleLogout();
-
             if (window.matchMedia('(max-width: 768px)').matches) {
                 window.history.pushState({chatOpen: true}, "");
                 document.getElementById('sidebar').classList.add('inactive');
                 document.getElementById('chatArea').classList.add('active');
             }
-
-            // Cleanup old connections
-            activeMessageSources.forEach((source, key) => {
-                source.close();
-                activeMessageSources.delete(key);
-            });
             
             const container = document.getElementById('messagesContainer');
-            const spinnerWrap = document.getElementById('syncSpinnerWrap');
+            // Show skeleton loader initially before DB read completes
+            container.innerHTML = `<div class="skel-msg-group"><div class="skeleton skel-bubble skel-left"></div><div class="skeleton skel-bubble skel-right" style="width:60%"></div><div class="skeleton skel-bubble skel-left" style="width:30%"></div></div>`;
             
-            spinnerWrap.classList.add('active');
-            container.classList.add('syncing');
+            await refreshActiveChatUI(true);
+        }
+        
+        async function refreshActiveChatUI(isInitialOpen = false) {
+            if (!activeChatIds || activeChatIds.length === 0) return;
             
             let cachedMsgs = [];
-            for (const id of ids) {
+            for (const id of activeChatIds) {
                 const msgs = await getCachedMessages(id);
                 cachedMsgs = cachedMsgs.concat(msgs);
             }
@@ -1835,102 +1965,21 @@
             const msgsMap = new Map();
             cachedMsgs.forEach(m => msgsMap.set(m.id, m));
             
-            if (cachedMsgs.length > 0) {
-                renderMsgs(msgsMap);
-                setTimeout(() => scrollToBottom('auto'), 50); 
-            } else {
-                container.innerHTML = `<div class="skel-msg-group"><div class="skeleton skel-bubble skel-left"></div><div class="skeleton skel-bubble skel-right" style="width:60%"></div><div class="skeleton skel-bubble skel-left" style="width:30%"></div></div>`;
-            }
-
-            let lastTs = 0;
-            if (cachedMsgs.length >= 5) {
-                lastTs = Math.max(...cachedMsgs.map(m => m.timestamp));
-            }
+            const c = document.getElementById('messagesContainer');
+            const wasAtBottom = (c.scrollHeight - c.scrollTop - c.clientHeight) <= 100;
             
-            await new Promise(r => setTimeout(r, 400));
+            renderMsgs(msgsMap);
             
-            let pendingSyncs = ids.length;
-
-            ids.forEach(id => {
-                let retryCount = 0;
-                
-                function connectMsgStream() {
-                    const source = new EventSource(`${RENDER_BACKEND_URL}/api/messages/stream?chatId=${id}&since=${lastTs}&token=${token}`);
-                    activeMessageSources.set(id, source);
-
-                    let isFirstSync = true;
-                    
-                    const processPayload = async (dataArray, eventType) => {
-                        let isNew = false;
-                        const newToCache = [];
-                        
-                        dataArray.forEach(item => {
-                            // Unified parser since payload structures vary between initial (raw data) vs update (change docs)
-                            const data = eventType === 'initial' ? item : item.doc;
-                            
-                            // Ignore 'removed' events. This is an append-only logger, and ignoring removals prevents
-                            // sliding-window bugs where the backend unloads old messages from memory/cache.
-                            if (eventType === 'update' && item.type === 'removed') return;
-                            
-                            data.chatId = id; 
-                            msgsMap.set(data.id, data);
-                            newToCache.push(data);
-                            isNew = true;
-                        });
-                        
-                        const c = document.getElementById('messagesContainer');
-                        const wasAtBottom = (c.scrollHeight - c.scrollTop - c.clientHeight) <= 100;
-
-                        if (newToCache.length > 0) await saveCachedMessages(newToCache);
-                        
-                        if (isNew || cachedMsgs.length === 0) {
-                            renderMsgs(msgsMap);
-                            
-                            if (isFirstSync || wasAtBottom) {
-                                setTimeout(() => scrollToBottom(isFirstSync ? 'auto' : 'smooth'), 50);
-                            } else if (!isFirstSync && isNew && !wasAtBottom) {
-                                document.getElementById('newMsgBadge').classList.remove('hidden');
-                                document.getElementById('scrollFab').classList.add('visible');
-                            }
-                        }
-                        
-                        if (isFirstSync) {
-                            isFirstSync = false;
-                            pendingSyncs--;
-                            if (pendingSyncs <= 0) {
-                                spinnerWrap.classList.remove('active');
-                                container.classList.remove('syncing');
-                            }
-                        }
-                    };
-
-                    source.addEventListener('initial', (e) => {
-                        retryCount = 0;
-                        try { processPayload(JSON.parse(e.data), 'initial'); } catch(err){ console.error("Message stream initial parse error:", err); }
-                    });
-
-                    source.addEventListener('update', (e) => {
-                        try { processPayload(JSON.parse(e.data), 'update'); } catch(err){ console.error("Message stream update parse error:", err); }
-                    });
-                    
-                    source.onerror = (err) => {
-                        source.close();
-                        activeMessageSources.delete(id);
-                        
-                        // Prevent leaking loading spinners
-                        if (isFirstSync) {
-                            isFirstSync = false; pendingSyncs--;
-                            if (pendingSyncs <= 0) { spinnerWrap.classList.remove('active'); container.classList.remove('syncing'); }
-                        }
-                        
-                        retryCount++;
-                        const backoff = Math.min(1000 * Math.pow(2, retryCount), 30000);
-                        setTimeout(() => { if (activeChatId === ids[0]) connectMsgStream(); }, backoff);
-                    };
+            if (isInitialOpen || wasAtBottom) {
+                if (isInitialOpen) {
+                    scrollToBottom('auto'); // Sync scroll prevents flashing top messages
+                } else {
+                    setTimeout(() => scrollToBottom('smooth'), 50); // Smooth scroll for new live messages
                 }
-                
-                connectMsgStream();
-            });
+            } else if (!isInitialOpen && !wasAtBottom) {
+                document.getElementById('newMsgBadge').classList.remove('hidden');
+                document.getElementById('scrollFab').classList.add('visible');
+            }
         }
 
         function renderMsgs(map) {
@@ -1972,7 +2021,7 @@
 
                 const safeText = escapeHTML(m.text || '');
                 const urlRegex = /(https?:\/\/[^\s]+)/g;
-                const formattedText = safeText ? safeText.replace(urlRegex, url => `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: var(--md-sys-color-primary); text-decoration: underline;">${url}</a>`) : '';
+                const formattedText = safeText ? safeText.replace(urlRegex, url => `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline; font-weight: 600;">${url}</a>`) : '';
 
                 div.innerHTML = `${showSenderName ? `<div class="msg-sender">${escapeHTML(m.senderName)}</div>` : ''}<div class="msg-text">${formattedText || 'Media'}</div><div class="msg-meta">${date.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div>`;
                 if (currentGroup) currentGroup.appendChild(div);
@@ -2021,12 +2070,8 @@
         
         function closeChatMobile() { 
             window.history.back(); 
-            // Cleanup source on unmount
-            activeMessageSources.forEach((source, key) => {
-                source.close();
-                activeMessageSources.delete(key);
-            });
             activeChatId = null;
+            activeChatIds = [];
         }
         
         window.addEventListener('popstate', () => { document.getElementById('chatArea').classList.remove('remove'); document.getElementById('chatArea').classList.remove('active'); });
@@ -2147,11 +2192,9 @@
                 
                 updateRefreshProgress(10, "Clearing local storage...");
                 const theme = localStorage.getItem('theme');
-                const bg = localStorage.getItem('chatBg');
                 const tkn = localStorage.getItem('wp_api_token');
                 localStorage.clear();
                 if(theme) localStorage.setItem('theme', theme);
-                if(bg) localStorage.setItem('chatBg', bg);
                 if(tkn) localStorage.setItem('wp_api_token', tkn);
 
                 updateRefreshProgress(15, "Wiping database...");
@@ -2178,14 +2221,14 @@
 
                 updateRefreshProgress(30, "Fetching chat list...");
                 
-                // HTTP Fetch replacement for hard-sync only
                 const token = localStorage.getItem('wp_api_token');
-                const res = await fetch(`${RENDER_BACKEND_URL}/api/export`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const res = await fetch(`${RENDER_BACKEND_URL}/api/export/chats`, { headers: { 'Authorization': `Bearer ${token}` } });
                 const exportData = await res.json();
                 
-                const chatsData = Object.values(exportData.chats);
+                const chatsData = exportData.chats || [];
+                const totalMessages = Math.max(1, exportData.totalMessages || 1); // Prevent division by zero
                 const groups = {};
-                const excluded = [''];
+                const excluded = ['917278779512@s.whatsapp.net', '201554426618024@lid'];
 
                 chatsData.forEach(d => {
                     if (!d.lastActive || excluded.includes(d.id)) return;
@@ -2200,19 +2243,33 @@
                 const chats = Object.values(groups).map(g => ({...g.main, ids: g.ids})).sort((a,b) => b.lastActive - a.lastActive);
                 await saveCachedChats(chats);
 
-                const total = chats.length;
-                let done = 0;
+                let messagesFetchedSoFar = 0;
 
                 for (const chat of chats) {
                     const name = chat.customName || chat.displayName || chat.phoneNumber || chat.id;
-                    updateRefreshProgress(30 + ((done / total) * 60), `Fetching: ${name}...`);
+                    
+                    let currentPercent = Math.min(99, 30 + ((messagesFetchedSoFar / totalMessages) * 70));
+                    updateRefreshProgress(currentPercent, `Fetching: ${name}...`);
                     
                     for (const id of chat.ids) {
-                        const msgs = exportData.messages[id] || [];
-                        msgs.forEach(m => m.chatId = id);
-                        if (msgs.length > 0) await saveCachedMessages(msgs);
+                        try {
+                            const msgRes = await fetch(`${RENDER_BACKEND_URL}/api/export/messages?chatId=${encodeURIComponent(id)}&token=${token}`, { headers: { 'Authorization': `Bearer ${token}` } });
+                            if (msgRes.ok) {
+                                const msgData = await msgRes.json();
+                                const msgs = msgData.messages || [];
+                                if (msgs.length > 0) {
+                                    msgs.forEach(m => m.chatId = id);
+                                    await saveCachedMessages(msgs);
+                                    messagesFetchedSoFar += msgs.length;
+                                    
+                                    currentPercent = Math.min(99, 30 + ((messagesFetchedSoFar / totalMessages) * 70));
+                                    updateRefreshProgress(currentPercent, `Fetching: ${name}...`);
+                                }
+                            }
+                        } catch (err) {
+                            console.warn(`Failed to fetch messages for ${id}`, err);
+                        }
                     }
-                    done++;
                 }
 
                 updateRefreshProgress(100, "Sync complete! Restarting...");
