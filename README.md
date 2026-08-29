@@ -97,6 +97,33 @@ That's everything you need from Firebase — the frontend doesn't need any Fireb
 7.  Click **Create Web Service**.
 8.  Wait for the deployment to finish. Render will give you a URL like `https://your-app.onrender.com`.
 
+### Excluding specific chats from logging
+
+If there are chats you don't want logged at all — a bot, a broadcast/status JID, a business account — edit `EXCLUDED_JIDS` in `src/config.js` on your fork before deploying:
+
+```javascript
+// --- CONFIGURATION ---
+const PORT = process.env.PORT || 3000;
+const AUTH_USER = process.env.AUTH_USER;
+const AUTH_PASS = process.env.AUTH_PASS;
+const MAX_LOGS = 500;
+const MAX_CONNECTIONS_PER_TOKEN = 15;
+const VERSION = '4.2.3';
+const EXCLUDED_JIDS = new Set(['']);
+
+module.exports = {
+    PORT,
+    AUTH_USER,
+    AUTH_PASS,
+    MAX_LOGS,
+    MAX_CONNECTIONS_PER_TOKEN,
+    VERSION,
+    EXCLUDED_JIDS
+};
+```
+
+`EXCLUDED_JIDS` is a set of full JIDs (the `...@s.whatsapp.net` / `...@g.us` / `...@lid` identifiers, not just a phone number) that are skipped entirely — they won't be cached, streamed, or included in exports. It ships empty by default. You can find a chat's exact JID from the live server logs (`Settings` -> `System Diagnostics`) the first time it logs a message, then add it here, e.g. `new Set(['917278779512@s.whatsapp.net', '201554426618024@lid'])`, and redeploy.
+
 ---
 
 ## Step 3: Connect WhatsApp
