@@ -56,6 +56,7 @@
             --md-sys-color-error: #d20f39; /* Red */
             --md-sys-color-error-container: #ea76cb; /* Pink approx */
             --md-sys-color-on-error-container: #eff1f5;
+            --md-sys-color-on-error: #eff1f5; /* Fixed text for errors */
             
             --chat-bubble-me: #a6d189; /* Green/Primary approx for light */
             --chat-on-bubble-me: #4c4f69;
@@ -99,6 +100,7 @@
             --md-sys-color-error: #f38ba8; /* Red */
             --md-sys-color-error-container: #d20f39; 
             --md-sys-color-on-error-container: #f38ba8;
+            --md-sys-color-on-error: #1e1e2e; /* Fixed text for errors */
             
             --chat-bubble-me: #a6e3a1;
             --chat-on-bubble-me: #1e1e2e;
@@ -136,6 +138,7 @@
             --md-sys-color-error: #f38ba8; 
             --md-sys-color-error-container: #d20f39; 
             --md-sys-color-on-error-container: #f38ba8;
+            --md-sys-color-on-error: #000000; /* Fixed text for errors */
             
             --chat-bubble-me: #a6e3a1;
             --chat-on-bubble-me: #000000;
@@ -343,7 +346,7 @@
 
         /* CHAT AREA */
         .chat-area { flex: 1; display: flex; flex-direction: column; position: relative; background-color: var(--chat-bg-color); transition: background-color 0.3s; overflow: hidden; }
-        .chat-bg-pattern { position: absolute; inset: 0; opacity: var(--chat-bg-image-opacity); z-index: 0; pointer-events: none; background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%236e7874' fill-opacity='1' fill-rule='evenodd'/%3E%3C/svg%3E"); }
+        .chat-bg-pattern { position: absolute; inset: 0; opacity: var(--chat-bg-image-opacity); z-index: 0; pointer-events: none; background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%236e7874' fill-opacity='1' fill-rule='evenodd'/%3E%3C/svg%3E"); }
         .chat-header { height: 64px; background: var(--md-sys-color-surface); display: flex; align-items: center; padding: 0 16px; border-bottom: 1px solid var(--md-sys-color-outline-variant); z-index: 5; }
         
         .chat-content {
@@ -428,7 +431,7 @@
         .new-msg-badge { position: absolute; top: -2px; right: -2px; width: 12px; height: 12px; background: var(--md-sys-color-error); border-radius: 50%; border: 2px solid var(--md-sys-color-surface-container-high); }
 
         /* Offline Indicator */
-        .offline-banner { position: fixed; top: 0; left: 50%; transform: translateX(-50%); background: var(--md-sys-color-error); color: var(--md-sys-color-on-error-container); padding: 4px 16px; border-radius: 0 0 8px 8px; font-size: 12px; z-index: 9999; display: flex; align-items: center; gap: 6px; box-shadow: var(--elevation-1); }
+        .offline-banner { position: fixed; top: 0; left: 50%; transform: translateX(-50%); background: var(--md-sys-color-error); color: var(--md-sys-color-on-error); padding: 4px 16px; border-radius: 0 0 8px 8px; font-size: 12px; z-index: 9999; display: flex; align-items: center; gap: 6px; box-shadow: var(--elevation-1); }
 
         /* Calendar Modal */
         .calendar-card { background: var(--md-sys-color-surface); padding: 0; border-radius: 28px; width: 320px; overflow: hidden; display: flex; flex-direction: column; }
@@ -685,7 +688,7 @@
             <div class="sidebar-header">
                 <div style="display: flex; align-items: center; gap: 12px; padding: 12px 0;">
                     <h2 style="font-family: 'Lexend', sans-serif; font-size: 20px; font-weight: 500; color: var(--md-sys-color-on-surface); margin: 0;">Chat Log</h2>
-                    <span style="font-family: 'Lexend', sans-serif; font-size: 12px; font-weight: 500; color: var(--md-sys-color-on-surface-variant); background-color: var(--md-sys-color-surface-container-high); padding: 2px 8px; border-radius: 100px; display: inline-flex; align-items: center;">v4.2.2</span>
+                    <span style="font-family: 'Lexend', sans-serif; font-size: 12px; font-weight: 500; color: var(--md-sys-color-on-surface-variant); background-color: var(--md-sys-color-surface-container-high); padding: 2px 8px; border-radius: 100px; display: inline-flex; align-items: center;">v4.2.3</span>
                 </div>
                 <div style="display:flex; gap: 8px;">
                     <button class="icon-btn ripple-surface" onclick="refreshApp()"><span class="material-symbols-rounded">refresh</span></button>
@@ -1682,7 +1685,7 @@
             
             const cachedChats = await getCachedChats();
             if (cachedChats && cachedChats.length > 0) {
-                cachedChats.sort((a,b) => b.lastActive - a.lastActive);
+                cachedChats.sort((a,b) => (b.lastActive || 0) - (a.lastActive || 0) || a.id.localeCompare(b.id));
                 renderChatList(cachedChats);
             } else {
                 list.innerHTML = '';
@@ -1715,7 +1718,7 @@
                             }
                         });
                         
-                        chats.sort((a,b) => (b.lastActive || 0) - (a.lastActive || 0));
+                        chats.sort((a,b) => (b.lastActive || 0) - (a.lastActive || 0) || a.id.localeCompare(b.id));
                         await saveCachedChats(chats);
                         renderChatList(chats);
                     } catch (err) {
@@ -1752,7 +1755,7 @@
                                 }
                             });
                             
-                            const chats = Object.values(groups).map(g => ({...g.main, ids: g.ids})).sort((a,b) => b.lastActive - a.lastActive);
+                            const chats = Object.values(groups).map(g => ({...g.main, ids: g.ids})).sort((a,b) => (b.lastActive || 0) - (a.lastActive || 0) || a.id.localeCompare(b.id));
                             await saveCachedChats(chats);
                             renderChatList(chats);
                         }
@@ -1968,17 +1971,21 @@
             const c = document.getElementById('messagesContainer');
             const wasAtBottom = (c.scrollHeight - c.scrollTop - c.clientHeight) <= 100;
             
-            renderMsgs(msgsMap);
-            
-            if (isInitialOpen || wasAtBottom) {
-                if (isInitialOpen) {
-                    scrollToBottom('auto'); // Sync scroll prevents flashing top messages
-                } else {
-                    setTimeout(() => scrollToBottom('smooth'), 50); // Smooth scroll for new live messages
+            if (cachedMsgs.length > 0) {
+                renderMsgs(msgsMap);
+                
+                if (isInitialOpen || wasAtBottom) {
+                    if (isInitialOpen) {
+                        scrollToBottom('auto'); // Sync scroll prevents flashing top messages
+                    } else {
+                        setTimeout(() => scrollToBottom('smooth'), 50); // Smooth scroll for new live messages
+                    }
+                } else if (!isInitialOpen && !wasAtBottom) {
+                    document.getElementById('newMsgBadge').classList.remove('hidden');
+                    document.getElementById('scrollFab').classList.add('visible');
                 }
-            } else if (!isInitialOpen && !wasAtBottom) {
-                document.getElementById('newMsgBadge').classList.remove('hidden');
-                document.getElementById('scrollFab').classList.add('visible');
+            } else {
+                c.innerHTML = '<div class="empty-state"><p>No messages recorded</p></div>';
             }
         }
 
@@ -2240,7 +2247,7 @@
                     }
                 });
 
-                const chats = Object.values(groups).map(g => ({...g.main, ids: g.ids})).sort((a,b) => b.lastActive - a.lastActive);
+                const chats = Object.values(groups).map(g => ({...g.main, ids: g.ids})).sort((a,b) => (b.lastActive || 0) - (a.lastActive || 0) || a.id.localeCompare(b.id));
                 await saveCachedChats(chats);
 
                 let messagesFetchedSoFar = 0;
