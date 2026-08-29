@@ -1,5 +1,5 @@
-const CACHE_NAME = 'walogger-4.1.5'; // Incremented to trigger an update
-const FONT_CACHE = 'walogger-fonts-4.1'; // New cache specifically for offline Google Fonts
+const CACHE_NAME = 'walogger-4.2.3'; // Incremented to trigger an update
+const FONT_CACHE = 'walogger-fonts-4.2.3'; // New cache specifically for offline Google Fonts
 const ASSETS = [
     './',
     '<--- website link --->',
