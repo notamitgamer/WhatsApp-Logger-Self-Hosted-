@@ -73,6 +73,14 @@ function startPermanentListeners() {
                 const payload = `event: update\ndata: ${JSON.stringify([{ type: change.type, doc: data }])}\n\n`;
                 chatClients.forEach(res => { try { res.write(payload); } catch (e) {} });
             }
+
+            // Broadcast to global sync clients too, stamped with chatId since
+            // the raw Firestore doc doesn't carry it (it's derived from the doc path).
+            if (clients.sync.size > 0) {
+                const syncData = { ...data, chatId };
+                const syncPayload = `event: update\ndata: ${JSON.stringify([{ type: change.type, doc: syncData }])}\n\n`;
+                clients.sync.forEach(res => { try { res.write(syncPayload); } catch (e) {} });
+            }
         });
     });
 }
