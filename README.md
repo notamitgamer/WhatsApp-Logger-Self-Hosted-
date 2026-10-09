@@ -1,6 +1,10 @@
-# WhatsApp Logger (Self-Hosted)
+<p align="center">
+  <img src="https://raw.cdn.amit.is-a.dev/uploads/c44b5507-icon.svg" height="150" width="150">
+</p>
 
-A privacy-focused, self-hosted WhatsApp archiving tool. It captures messages (including deleted ones) via a linked device connection and stores them in your own Firebase Firestore database.
+<h1 align="center">WhatsApp Logger (Self-Hosted)</h1>
+
+<b><p align="center">A privacy-focused, self-hosted WhatsApp archiving tool. It captures messages (including deleted ones) via a linked device connection and stores them in your own Firebase Firestore database.</p></b>
 
 >[!TIP]
 > Now you can see the server logs in the frontend by going to `Settings` -> `System Diagnostics` -> Toggle `Live server logs`. Also you can visit `https://your-app.onrender.com/logs` after login to see the logs.
@@ -21,7 +25,8 @@ If you're updating from an older version, here's everything that changed across 
 > * **Standard Linked Device:** The tool connects to WhatsApp using the official Multi-Device WebSocket protocol. To WhatsApp's servers, this connection looks exactly like you logging into standard WhatsApp Web on a secondary browser. 
 > * **No User Reports:** The number one cause of bans is other users reporting an account. Since this logger works silently in the background and does not interact with anyone, there is zero risk of being reported.
 
-### Check <a href="https://docs.amit.is-a.dev/whatsapp-logger/">guide</a> for detailed installation process. 
+ > [!TIP]
+> Check <a href="https://docs.amit.is-a.dev/whatsapp-logger/">guide</a> for detailed installation process. 
 
 ### Important notes:
  * It is recommended to download the **web app (PWA)** after the publication of the webpage for better security and native experience. 
