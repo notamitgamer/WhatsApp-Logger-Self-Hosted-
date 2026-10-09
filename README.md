@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.cdn.amit.is-a.dev/uploads/c44b5507-icon.svg" height="150" width="150">
+  <img src="https://raw.cdn.amit.is-a.dev/uploads/c44b5507-icon.svg" height="100" width="100">
 </p>
 
 <h1 align="center">WhatsApp Logger (Self-Hosted)</h1>
