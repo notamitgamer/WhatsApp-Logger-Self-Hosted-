@@ -146,24 +146,34 @@ module.exports = {
 
 ## Step 4: Setup Frontend (The Viewer)
 
-1.  Download the `index.html` file from this repository.
-2.  Open `index.html` in a text editor (Notepad, VS Code, etc.).
-3.  Locate the Configuration section near the top of the `<script>` block.
-4.  **Fill in the details**:
+1.  Download this repository (green **Code** button -> **Download ZIP**) or clone it. The frontend is made of `index.html` plus the `css/` and `js/` folders. Keep them together.
+2.  Open **`js/config.js`** in a text editor (Notepad, VS Code, etc.). It is a tiny file with a big `EDIT THIS ONE LINE` banner, so it's hard to miss.
+3.  **Fill in the details**:
     * `RENDER_BACKEND_URL`: Your Render URL (e.g., `https://your-app.onrender.com` - **No trailing slash**).
 
     **It should look like this before you edit it:**
     ```javascript
-    const RENDER_BACKEND_URL = ""; 
+    const RENDER_BACKEND_URL = ""; // <-- PUT YOUR RENDER URL HERE
     ```
 
     That's the only setting needed. As of v4.2.1, the frontend authenticates against your Render backend (`/api/verify`) and gets a session token back, used for every chat/message request over Server-Sent Events. Firebase credentials only ever live on the backend, set in Step 2.
 
-5.  **Deploy the Frontend**:
-    * You can host this single file anywhere:
-        * **Firebase Hosting** (Recommended): `firebase init` -> Hosting -> Select `public` directory -> Put `index.html` there -> `firebase deploy`.
+4.  **Deploy the Frontend**:
+    * Host the whole frontend folder (`index.html`, `css/`, `js/`, plus `sw.js` and `manifest.json` for the installable PWA) on any static host:
+        * **Firebase Hosting** (Recommended): `firebase init` -> Hosting -> Select `public` directory -> Copy `index.html`, `css/` and `js/` there -> `firebase deploy`.
         * **GitHub Pages**: Enable Pages in your repo settings.
         * **Netlify/Vercel**: Drag and drop the folder containing `index.html`.
+
+### Frontend file layout
+
+```
+index.html        page markup (sidebar, chat area, modals)
+css/              themes, layout, modals (loaded in the order listed in index.html)
+js/config.js      <-- the only file you need to edit
+js/*.js           app code, split by feature (boot, lock screen, SSE sync, chat UI, calendar, ...)
+```
+
+> **Note:** the scripts are plain `<script>` files that share one global scope, so the load order in `index.html` matters. If you add a file, add it to the list at the bottom of `index.html` and to `ASSETS` in `sw.js`.
 
 ---
 

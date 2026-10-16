@@ -1,7 +1,31 @@
-const CACHE_NAME = 'walogger-4.2.3'; // Incremented to trigger an update
-const FONT_CACHE = 'walogger-fonts-4.2.3'; // New cache specifically for offline Google Fonts
+const CACHE_NAME = 'walogger-4.2.3-r2'; // Incremented to trigger an update
+const FONT_CACHE = 'walogger-fonts-4.2.3-r2'; // New cache specifically for offline Google Fonts
 const ASSETS = [
     './',
+    './index.html',
+    './css/tokens.css',
+    './css/animations.css',
+    './css/auth-lock.css',
+    './css/components.css',
+    './css/layout.css',
+    './css/modals.css',
+    './css/logs.css',
+    './js/errors.js',
+    './js/config.js',
+    './js/state.js',
+    './js/db.js',
+    './js/helpers.js',
+    './js/pwa.js',
+    './js/boot.js',
+    './js/lock-screen.js',
+    './js/settings.js',
+    './js/sse-chats.js',
+    './js/sse-sync.js',
+    './js/chat-ui.js',
+    './js/calendar.js',
+    './js/chat-actions.js',
+    './js/maintenance.js',
+    './js/diagnostics.js',
     '<--- website link --->',
     '<--- icon --->',
     'https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap',
