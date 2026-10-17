@@ -140,7 +140,7 @@ Pick the option that matches how you host the frontend.
 
 1.  Open your **fork** on GitHub and go to **`js/config.js`**. Click the pencil icon (**Edit this file**). It's a tiny file with a big `EDIT THIS ONE LINE` banner, so it's hard to miss.
 2.  Paste your Render URL between the quotes (e.g., `https://your-app.onrender.com` - **No trailing slash**).
-3.  Click **Commit changes**. If your fork is connected to GitHub Pages, Netlify, Vercel or Firebase, it redeploys on its own and there's nothing to upload. Leave the file as it is afterwards.
+3.  Click **Commit changes**. If your hosting provider is connected to your fork and auto-deploys, it redeploys on its own and there's nothing to upload. Leave the file as it is afterwards.
 
 ### Option B: Self-host manually
 
@@ -148,11 +148,10 @@ Pick the option that matches how you host the frontend.
 2.  Open **`js/config.js`** in a text editor (Notepad, VS Code, etc.). It is a tiny file with a big `EDIT THIS ONE LINE` banner, so it's hard to miss.
 3.  **Fill in the details**:
     * `RENDER_BACKEND_URL`: Your Render URL (e.g., `https://your-app.onrender.com` - **No trailing slash**).
-4.  **Deploy the Frontend**:
-    * Host the whole frontend folder (`index.html`, `css/`, `js/`, plus `sw.js` and `manifest.json` for the installable PWA) on any static host:
-        * **Firebase Hosting** (Recommended): `firebase init` -> Hosting -> Select `public` directory -> Copy `index.html`, `css/` and `js/` there -> `firebase deploy`.
-        * **GitHub Pages**: Enable Pages in your repo settings.
-        * **Netlify/Vercel**: Drag and drop the folder containing `index.html`.
+4.  **Deploy the Frontend**: Take these files and deploy them with whichever hosting provider you use. How to deploy is up to your provider.
+    * `index.html`
+    * `css/` and `js/` folders
+    * `sw.js` and `manifest.json` (for the installable PWA)
 
 ### The setting (both options)
 
