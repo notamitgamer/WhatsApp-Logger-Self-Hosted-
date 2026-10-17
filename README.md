@@ -6,16 +6,6 @@
 
 <b><p align="center">A privacy-focused, self-hosted WhatsApp archiving tool. It captures messages (including deleted ones) via a linked device connection and stores them in your own Firebase Firestore database.</p></b>
 
->[!TIP]
-> Now you can see the server logs in the frontend by going to `Settings` -> `System Diagnostics` -> Toggle `Live server logs`. Also you can visit `https://your-app.onrender.com/logs` after login to see the logs.
-
-## Upgrade Notes (v4.2.x - v4.3.x)
-
-* **v4.3.0 (action required):** The frontend is now `index.html` + `css/` + `js/`. Your Render URL moved to `js/config.js`, so set it there again and upload the whole folder. See [Step 4](#step-4-setup-frontend-the-viewer).
-* **v4.2.2:** Real-time sync now covers every chat, not just the open one. `Settings` -> refresh icon -> `Hard Reset` does a full chat-by-chat resync with real progress.
-* **v4.2.1 (security):** Firebase config removed from the frontend. Update your Firestore rules to deny all client access ([Step 1](#step-1-firebase-setup-the-database)).
-* **UI:** Three themes (Latte, Mocha, AMOLED) under `Settings` -> `Appearance` -> `Theme`.
-
 > [!IMPORTANT]
 > Using this logger is completely safe and will not get your WhatsApp account banned. Here is why:
 > 
@@ -23,12 +13,8 @@
 > * **Standard Linked Device:** The tool connects to WhatsApp using the official Multi-Device WebSocket protocol. To WhatsApp's servers, this connection looks exactly like you logging into standard WhatsApp Web on a secondary browser. 
 > * **No User Reports:** The number one cause of bans is other users reporting an account. Since this logger works silently in the background and does not interact with anyone, there is zero risk of being reported.
 
- > [!TIP]
-> Check <a href="https://docs.amit.is-a.dev/whatsapp-logger/">guide</a> for detailed installation process. 
-
-### Important notes:
- * It is recommended to download the **web app (PWA)** after the publication of the webpage for better security and native experience. 
- * It is recommended to use **PIN** or **Biometric authentication** inside the web app. Find the authentication options in Settings.
+> [!TIP]
+> Check <a href="https://docs.amit.is-a.dev/whatsapp-logger/">guide</a> for detailed installation process.
 
 ## Features
 
@@ -38,7 +24,11 @@
 * **Media Support**: Captures text messages (Images/Media support depends on Baileys implementation, primarily text-focused).
 * **Search & Filter**: Search by content or filter by date.
 * **Export**: Export chat logs to `.txt` files.
+* **Live Server Logs**: See backend logs in the app under `Settings` -> `System Diagnostics` -> `Live server logs`, or visit `https://your-app.onrender.com/logs` after login.
 * **Offline Ready**: Uses IndexedDB caching so you can read your logs even without an internet connection.
+
+> [!NOTE]
+> **Upgrading from an older version?** Check the [CHANGELOG](CHANGELOG.md) first. v4.3.0 moves your Render URL to `js/config.js`.
 
 ---
 
@@ -184,6 +174,9 @@ js/*.js           app code, split by feature (boot, lock screen, SSE sync, chat 
     * **Sidebar**: Shows chat list sorted by newest activity.
     * **Search**: Filter contacts by name or phone number.
     * **Export**: Download chat history as a `.txt` file.
+
+> [!TIP]
+> Install the **web app (PWA)** after publishing the page for better security and a native feel, and turn on **PIN** or **Biometric** lock in `Settings`.
 
 ---
 
