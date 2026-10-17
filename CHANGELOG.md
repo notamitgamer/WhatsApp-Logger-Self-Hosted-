@@ -10,6 +10,7 @@ Upgrading? Read the **Upgrade notes** under each version.
 - The Render URL setting (`RENDER_BACKEND_URL`) now lives in `js/config.js`, marked with a highlighted banner.
 - The service worker now caches the new files and uses new cache names so installed PWAs update.
 - Removed redundant comments from the frontend code.
+- `package.json` version synced to 4.3.0 (it was still `1.0.0`).
 - README and docs updated for the new frontend layout.
 
 ### Upgrade notes (action required)

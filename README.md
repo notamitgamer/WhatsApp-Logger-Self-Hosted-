@@ -6,6 +6,8 @@
 
 <b><p align="center">A privacy-focused, self-hosted WhatsApp archiving tool. It captures messages (including deleted ones) via a linked device connection and stores them in your own Firebase Firestore database.</p></b>
 
+<p align="center"><b>If this logger saves you time, please give it a <a href="https://github.com/notamitgamer/WhatsApp-Logger-Self-Hosted-">star on GitHub</a> ⭐ It takes two seconds and means a lot!</b></p>
+
 > [!IMPORTANT]
 > Using this logger is completely safe and will not get your WhatsApp account banned. Here is why:
 > 
@@ -201,6 +203,9 @@ Render's free tier spins down after inactivity. To keep your logger running 24/7
 5.  **URL (or IP)**: `https://your-app.onrender.com/ping` (Make sure to add `/ping` at the end).
 6.  **Monitoring Interval**: 5 minutes.
 7.  Click **Create Monitor**.
+
+> [!TIP]
+> Enjoying it? Please [star the repo](https://github.com/notamitgamer/WhatsApp-Logger-Self-Hosted-) ⭐ Stars are the only payment this project asks for, and they help other people find it.
 
 ---
 
