@@ -9,10 +9,11 @@
 >[!TIP]
 > Now you can see the server logs in the frontend by going to `Settings` -> `System Diagnostics` -> Toggle `Live server logs`. Also you can visit `https://your-app.onrender.com/logs` after login to see the logs.
 
-## Upgrade Notes (v4.2.x)
+## Upgrade Notes (v4.2.x - v4.3.x)
 
-If you're updating from an older version, here's everything that changed across the v4.2.x line in one place:
+If you're updating from an older version, here's everything that changed across the v4.2.x and v4.3.x lines in one place:
 
+* **v4.3.0 — Frontend split into multiple files (action required when upgrading):** `index.html` no longer contains all the CSS and JavaScript. It is now `index.html` plus the `css/` and `js/` folders. **Your Render URL (`RENDER_BACKEND_URL`) has moved to `js/config.js`**, so if you update an existing deployment in place, set it again there and upload the whole folder (`index.html`, `css/`, `js/`, `sw.js`). No app behavior changed. See [Step 4](#step-4-setup-frontend-the-viewer).
 * **v4.2.1 — Security fix:** Removed the public Firebase Web SDK config from the frontend. The frontend now only talks to your Render backend, never Firestore directly. Update your Firestore rules to deny all direct client access as shown in [Step 1](#step-1-firebase-setup-the-database).
 * **v4.2.2 — Real-time sync now covers every chat, not just the one you have open:** Previously, new messages only arrived for a chat you already had open — anything happening in other chats sat on the server until you clicked into them. Now a single sync connection streams updates for *all* chats at once, so incoming messages show up across every contact the moment they arrive, the way WhatsApp itself behaves when your phone comes back online.
 * **v4.2.2 — Full resync with real progress:** `Settings` -> refresh icon -> `Hard Reset` now pulls your entire message history chat-by-chat instead of one giant download, so the progress bar reflects actual messages fetched instead of a rough guess. Use this if you ever open a chat that shows nothing locally even though the server has history for it (e.g. after clearing site data or on a new device/browser).
