@@ -54,7 +54,7 @@
     * Start in **Production Mode**.
 3.  **Set Security Rules**:
     * Go to the **Rules** tab in Firestore.
-    * Replace the rules with the following. As of v4.2.1, the frontend never talks to Firestore directly — only your Render backend does, via the Admin SDK, which bypasses these rules entirely regardless of what they say. So there's no reason to allow any direct client access:
+    * Replace the rules with the following. As of v4.2.1, the frontend never talks to Firestore directly. Only your Render backend does, via the Admin SDK, which bypasses these rules entirely regardless of what they say. So there's no reason to allow any direct client access:
         ```javascript
         rules_version = '2';
         service cloud.firestore {
@@ -73,7 +73,7 @@
     * Click **Generate new private key**.
     * This will download a `.json` file. **Keep this safe.** You will need its content for Render.
 
-That's everything you need from Firebase — the frontend doesn't need any Firebase configuration at all.
+That's everything you need from Firebase. The frontend doesn't need any Firebase configuration at all.
 
 ---
 
@@ -94,7 +94,7 @@ That's everything you need from Firebase — the frontend doesn't need any Fireb
 
 ### Excluding specific chats from logging
 
-If there are chats you don't want logged at all — a bot, a broadcast/status JID, a business account — edit `EXCLUDED_JIDS` in `src/config.js` on your fork before deploying:
+If there are chats you don't want logged at all (a bot, a broadcast/status JID, a business account), edit `EXCLUDED_JIDS` in `src/config.js` on your fork before deploying:
 
 ```javascript
 // --- CONFIGURATION ---
@@ -117,7 +117,7 @@ module.exports = {
 };
 ```
 
-`EXCLUDED_JIDS` is a set of full JIDs (the `...@s.whatsapp.net` / `...@g.us` / `...@lid` identifiers, not just a phone number) that are skipped entirely — they won't be cached, streamed, or included in exports. It ships empty by default. You can find a chat's exact JID from the live server logs (`Settings` -> `System Diagnostics`) the first time it logs a message, then add it here, e.g. `new Set(['917278779512@s.whatsapp.net', '201554426618024@lid'])`, and redeploy.
+`EXCLUDED_JIDS` is a set of full JIDs (the `...@s.whatsapp.net` / `...@g.us` / `...@lid` identifiers, not just a phone number) that are skipped entirely. They won't be cached, streamed, or included in exports. It ships empty by default. You can find a chat's exact JID from the live server logs (`Settings` -> `System Diagnostics`) the first time it logs a message, then add it here, e.g. `new Set(['917278779512@s.whatsapp.net', '201554426618024@lid'])`, and redeploy.
 
 ---
 
