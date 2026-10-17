@@ -13,9 +13,12 @@ Upgrading? Read the **Upgrade notes** under each version.
 - README and docs updated for the new frontend layout.
 
 ### Upgrade notes (action required)
-1. Download the whole repository, not just `index.html`.
-2. Open `js/config.js` and set `RENDER_BACKEND_URL` again (your old value was inside `index.html`).
-3. Upload `index.html`, `css/`, `js/`, `sw.js` and `manifest.json` to your host.
+1. In your fork, click **Sync fork** -> **Update branch**.
+2. If GitHub reports a conflict on `index.html` (because you edited your Render URL there before), discard your fork's change and continue. That edit only contained your URL. If you also made other edits to `index.html`, copy them somewhere first.
+3. Open `js/config.js` in your fork, paste your Render URL, and commit. Your host redeploys on its own.
+4. Future updates won't conflict, because `js/config.js` is the only file you edit.
+
+Not using a fork? Upload `index.html`, `css/`, `js/`, `sw.js` and `manifest.json` to your host and set the URL in `js/config.js`.
 
 See [Step 4](README.md#step-4-setup-frontend-the-viewer) in the README.
 

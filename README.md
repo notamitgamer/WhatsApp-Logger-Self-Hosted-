@@ -134,23 +134,19 @@ module.exports = {
 
 ## Step 4: Setup Frontend (The Viewer)
 
-1.  Download this repository (green **Code** button -> **Download ZIP**) or clone it. The frontend is made of `index.html` plus the `css/` and `js/` folders. Keep them together.
-2.  Open **`js/config.js`** in a text editor (Notepad, VS Code, etc.). It is a tiny file with a big `EDIT THIS ONE LINE` banner, so it's hard to miss.
-3.  **Fill in the details**:
-    * `RENDER_BACKEND_URL`: Your Render URL (e.g., `https://your-app.onrender.com` - **No trailing slash**).
+1.  Open your **fork** on GitHub and go to **`js/config.js`**. Click the pencil icon (**Edit this file**). It's a tiny file with a big `EDIT THIS ONE LINE` banner, so it's hard to miss.
+2.  Paste your Render URL between the quotes (e.g., `https://your-app.onrender.com` - **No trailing slash**).
 
     **It should look like this before you edit it:**
     ```javascript
     const RENDER_BACKEND_URL = ""; // <-- PUT YOUR RENDER URL HERE
     ```
 
-    That's the only setting needed. As of v4.2.1, the frontend authenticates against your Render backend (`/api/verify`) and gets a session token back, used for every chat/message request over Server-Sent Events. Firebase credentials only ever live on the backend, set in Step 2.
+3.  Click **Commit changes**. That's it. If your fork is connected to GitHub Pages, Netlify, Vercel or Firebase, it redeploys on its own and there's nothing to upload. Leave the file as it is afterwards.
 
-4.  **Deploy the Frontend**:
-    * Host the whole frontend folder (`index.html`, `css/`, `js/`, plus `sw.js` and `manifest.json` for the installable PWA) on any static host:
-        * **Firebase Hosting** (Recommended): `firebase init` -> Hosting -> Select `public` directory -> Copy `index.html`, `css/` and `js/` there -> `firebase deploy`.
-        * **GitHub Pages**: Enable Pages in your repo settings.
-        * **Netlify/Vercel**: Drag and drop the folder containing `index.html`.
+That's the only setting needed. As of v4.2.1, the frontend authenticates against your Render backend (`/api/verify`) and gets a session token back, used for every chat/message request over Server-Sent Events. Firebase credentials only ever live on the backend, set in Step 2.
+
+> **Hosting manually instead of auto-deploy?** Upload the whole frontend (`index.html`, `css/`, `js/`, plus `sw.js` and `manifest.json` for the installable PWA) to any static host. **GitHub Pages**: enable Pages in your repo settings. **Firebase Hosting**: copy those files into your `public` directory and run `firebase deploy`.
 
 ### Frontend file layout
 
