@@ -1,9 +1,33 @@
-const CACHE_NAME = 'walogger-4.2.3'; // Incremented to trigger an update
-const FONT_CACHE = 'walogger-fonts-4.2.3'; // New cache specifically for offline Google Fonts
+const CACHE_NAME = 'walogger-4.3.0'; // Incremented to trigger an update
+const FONT_CACHE = 'walogger-fonts-4.3.0'; // New cache specifically for offline Google Fonts
 const ASSETS = [
     './',
-    '<--- website link --->',
-    '<--- icon --->',
+    './index.html',
+    './css/tokens.css',
+    './css/animations.css',
+    './css/auth-lock.css',
+    './css/components.css',
+    './css/layout.css',
+    './css/modals.css',
+    './css/logs.css',
+    './js/errors.js',
+    './js/config.js',
+    './js/state.js',
+    './js/db.js',
+    './js/helpers.js',
+    './js/pwa.js',
+    './js/boot.js',
+    './js/lock-screen.js',
+    './js/settings.js',
+    './js/sse-chats.js',
+    './js/sse-sync.js',
+    './js/chat-ui.js',
+    './js/calendar.js',
+    './js/chat-actions.js',
+    './js/maintenance.js',
+    './js/diagnostics.js',
+    './manifest.json',
+    './public/icon.svg',
     'https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap',
     'https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0'
 ];

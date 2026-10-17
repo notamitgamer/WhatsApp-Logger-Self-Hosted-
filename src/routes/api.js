@@ -173,7 +173,7 @@ router.get('/api/export/chats', verifyApiToken, async (req, res) => {
     }
 });
 
-// Plain JSON (not SSE) — all messages for a single chat. Called once per
+// Plain JSON (not SSE): all messages for a single chat. Called once per
 // chat by the client's resync loop so progress can be updated after each
 // chat finishes, instead of waiting on one all-chats blob.
 router.get('/api/export/messages', verifyApiToken, async (req, res) => {

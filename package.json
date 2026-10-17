@@ -1,6 +1,6 @@
 {
   "name": "whatsapp-logger-backend",
-  "version": "1.0.0",
+  "version": "4.3.0",
   "description": "Backend for WhatsApp Logger using Baileys and Firebase",
   "main": "index.js",
   "scripts": {

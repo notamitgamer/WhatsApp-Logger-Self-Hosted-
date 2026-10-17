@@ -1,0 +1,74 @@
+#auth-screen {
+    position: fixed; inset: 0; z-index: 999;
+    background-color: var(--md-sys-color-surface-dim);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 24px; height: 100dvh;
+    transition: opacity 0.4s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.auth-card { 
+    background: var(--md-sys-color-surface);
+    border-radius: 28px;
+    padding: 32px 24px; 
+    width: 90%; max-width: 380px;
+    box-shadow: var(--elevation-2);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    display: flex; flex-direction: column; gap: 20px;
+    position: relative;
+}
+
+.brand-icon { 
+    width: 64px; height: 64px; 
+    display: flex; align-items: center; justify-content: center; 
+    margin: 0 auto 8px;
+}
+.brand-icon img { width: 100%; height: 100%; object-fit: contain; }
+
+#authLoader .spinner { 
+     border-color: rgba(128,128,128,0.2) !important; 
+     border-top-color: var(--md-sys-color-primary) !important; 
+}
+
+#lock-screen {
+    position: fixed; inset: 0; z-index: 2000;
+    background: var(--md-sys-color-surface);
+    display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+    padding: 48px 24px; opacity: 0; visibility: hidden; transition: opacity 0.3s;
+}
+#lock-screen.active { opacity: 1; visibility: visible; }
+
+.lock-header { text-align: center; margin-top: 4vh; }
+.lock-icon { width: 64px; height: 64px; margin-bottom: 16px; color: var(--md-sys-color-primary); }
+.lock-title { font-family: 'Lexend', sans-serif; font-size: 24px; margin-bottom: 8px; }
+.lock-sub { color: var(--md-sys-color-on-surface-variant); font-size: 14px; }
+
+.pin-dots { display: flex; gap: 16px; margin: 32px 0; justify-content: center; }
+.pin-dot {
+    width: 14px; height: 14px; border-radius: 50%;
+    border: 1px solid var(--md-sys-color-outline);
+    transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.pin-dot.filled { background: var(--md-sys-color-on-surface); border-color: var(--md-sys-color-on-surface); transform: scale(1.1); }
+.pin-dot.error { border-color: var(--md-sys-color-error); background: var(--md-sys-color-error); }
+
+.keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px 32px; margin-bottom: 2vh; }
+.key-btn {
+    width: 72px; height: 72px; border-radius: 50%; border: none; background: transparent;
+    font-size: 28px; font-weight: 400; color: var(--md-sys-color-on-surface);
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    transition: background 0.2s; font-family: 'Lexend', sans-serif;
+}
+.key-btn:active { background: var(--md-sys-color-surface-container-high); }
+.key-backspace { font-size: 24px; color: var(--md-sys-color-on-surface-variant); }
+
+.forgot-pin-btn { margin-top: 16px; color: var(--md-sys-color-primary); background: none; border: none; font-weight: 500; font-size: 14px; padding: 8px 16px; border-radius: 20px; cursor: pointer; }
+
+.lockout-container { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 100%; animation: fadeIn 0.3s; flex: 1; }
+.lockout-icon-bg { width: 80px; height: 80px; border-radius: 50%; background: var(--md-sys-color-error-container); color: var(--md-sys-color-on-error-container); display: flex; align-items: center; justify-content: center; margin-bottom: 24px; }
+.lockout-icon { font-size: 40px; }
+.lockout-title { font-family: 'Lexend', sans-serif; font-size: 28px; margin-bottom: 8px; color: var(--md-sys-color-on-surface); }
+.lockout-msg { color: var(--md-sys-color-on-surface-variant); margin-bottom: 32px; font-size: 16px; }
+.lockout-timer { font-family: 'Lexend', sans-serif; font-size: 56px; font-weight: 400; color: var(--md-sys-color-error); font-feature-settings: "tnum"; margin-bottom: 8px; }
+.lockout-sub { margin-top: 16px; color: var(--md-sys-color-on-surface-variant); font-size: 14px; }
+.lockout-actions { margin-top: 24px; display: flex; gap: 12px; }
+.locked-mode #pinUI, .locked-mode #bioUI, .locked-mode .forgot-pin-btn { display: none !important; }

@@ -15,7 +15,7 @@ const statusRoutes = require('./src/routes/status');
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-// Static assets (favicon/logo) — served unauthenticated, before any login check
+// Static assets (favicon/logo): served unauthenticated, before any login check
 app.use(express.static('public'));
 
 app.use((req, res, next) => {
@@ -24,7 +24,7 @@ app.use((req, res, next) => {
     next();
 });
 
-// Answer every OPTIONS preflight immediately — before ANY auth middleware sees it
+// Answer every OPTIONS preflight immediately, before ANY auth middleware sees it
 app.options('*', (req, res) => {
     res.sendStatus(200);
 });
@@ -37,7 +37,7 @@ app.use(apiRoutes);
 app.use(logsRoutes);
 // Login/logout/verify (unauthenticated by nature)
 app.use(authRoutes);
-// Cookie-authenticated web UI (home/status/QR page) — must be last, applies checkAuth
+// Cookie-authenticated web UI (home/status/QR page): must be last, applies checkAuth
 app.use(statusRoutes);
 
 // --- START SERVER ---

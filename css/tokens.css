@@ -1,0 +1,130 @@
+/* Base / Default Theme (Catppuccin Latte - Light) */
+:root {
+    --md-sys-color-primary: #40a02b; /* Green */
+    --md-sys-color-on-primary: #eff1f5; /* Base */
+    --md-sys-color-primary-container: #a6d189; /* Lighter Green approximation for container */
+    --md-sys-color-on-primary-container: #1e1e2e; 
+    
+    --md-sys-color-secondary: #179299; /* Teal */
+    --md-sys-color-on-secondary: #eff1f5;
+    --md-sys-color-secondary-container: #99d1db; /* Sky used as container */
+    --md-sys-color-on-secondary-container: #4c4f69;
+    
+    --md-sys-color-surface: #eff1f5; /* Base */
+    --md-sys-color-surface-dim: #e6e9ef; /* Mantle */
+    --md-sys-color-surface-container: #dce0e8; /* Crust */
+    --md-sys-color-surface-container-high: #ccd0da; /* Surface0 */
+    --md-sys-color-surface-container-highest: #bcc0cc; /* Surface1 */
+    
+    --md-sys-color-on-surface: #4c4f69; /* Text */
+    --md-sys-color-on-surface-variant: #5c5f77; /* Subtext1 */
+    --md-sys-color-outline: #8c8fa1; /* Overlay1 */
+    --md-sys-color-outline-variant: #acb0be; /* Surface2 */
+
+    --md-sys-color-error: #d20f39; /* Red */
+    --md-sys-color-error-container: #ea76cb; /* Pink approx */
+    --md-sys-color-on-error-container: #eff1f5;
+    --md-sys-color-on-error: #eff1f5; /* Fixed text for errors */
+    
+    --chat-bubble-me: #a6d189; /* Green/Primary approx for light */
+    --chat-on-bubble-me: #4c4f69;
+    --chat-bubble-them: #ffffff;
+    --chat-on-bubble-them: #4c4f69;
+    --chat-bg-color: #e6e9ef; /* Mantle */
+    --chat-bg-image-opacity: 0.05;
+    --search-highlight: #df8e1d; /* Yellow */
+    
+    --elevation-1: 0px 1px 3px 1px rgba(0,0,0,0.15), 0px 1px 2px 0px rgba(0,0,0,0.3);
+    --elevation-2: 0px 2px 6px 2px rgba(0,0,0,0.15), 0px 1px 2px 0px rgba(0,0,0,0.3);
+    
+    --base-font-size: 15px;
+}
+
+/* Dark Theme Tokens (Catppuccin Mocha) */
+[data-theme="mocha"] {
+    --md-sys-color-primary: #a6e3a1; /* Green */
+    --md-sys-color-on-primary: #1e1e2e; /* Base */
+    --md-sys-color-primary-container: #40a02b; /* Darker green */
+    --md-sys-color-on-primary-container: #a6e3a1;
+    
+    --md-sys-color-secondary: #94e2d5; /* Teal */
+    --md-sys-color-on-secondary: #1e1e2e;
+    --md-sys-color-secondary-container: #89dceb; /* Sky */
+    --md-sys-color-on-secondary-container: #1e1e2e;
+    
+    --md-sys-color-surface: #1e1e2e; /* Base */
+    --md-sys-color-surface-dim: #181825; /* Mantle */
+    --md-sys-color-surface-container: #11111b; /* Crust */
+    --md-sys-color-surface-container-high: #313244; /* Surface0 */
+    --md-sys-color-surface-container-highest: #45475a; /* Surface1 */
+    
+    --md-sys-color-on-surface: #cdd6f4; /* Text */
+    --md-sys-color-on-surface-variant: #bac2de; /* Subtext1 */
+    --md-sys-color-outline: #7f849c; /* Overlay1 */
+    --md-sys-color-outline-variant: #585b70; /* Surface2 */
+
+    --md-sys-color-error: #f38ba8; /* Red */
+    --md-sys-color-error-container: #d20f39; 
+    --md-sys-color-on-error-container: #f38ba8;
+    --md-sys-color-on-error: #1e1e2e; /* Fixed text for errors */
+    
+    --chat-bubble-me: #a6e3a1;
+    --chat-on-bubble-me: #1e1e2e;
+    --chat-bubble-them: #313244; /* Surface0 */
+    --chat-on-bubble-them: #cdd6f4;
+    --chat-bg-color: #181825; /* Mantle */
+    --chat-bg-image-opacity: 0.03;
+    --search-highlight: #f9e2af; /* Yellow */
+}
+
+/* True Black / AMOLED Theme */
+[data-theme="black"] {
+    --md-sys-color-primary: #a6e3a1; 
+    --md-sys-color-on-primary: #000000; 
+    --md-sys-color-primary-container: #40a02b; 
+    --md-sys-color-on-primary-container: #a6e3a1;
+    
+    --md-sys-color-secondary: #94e2d5; 
+    --md-sys-color-on-secondary: #000000;
+    --md-sys-color-secondary-container: #89dceb; 
+    --md-sys-color-on-secondary-container: #000000;
+    
+    --md-sys-color-surface: #000000;
+    --md-sys-color-surface-dim: #000000; 
+    --md-sys-color-surface-container: #000000; 
+    --md-sys-color-surface-container-high: #1e1e2e; /* Still use Mocha base for slight elevation */
+    --md-sys-color-surface-container-highest: #313244; 
+    
+    --md-sys-color-on-surface: #cdd6f4; 
+    --md-sys-color-on-surface-variant: #bac2de; 
+    --md-sys-color-outline: #7f849c; 
+    --md-sys-color-outline-variant: #585b70; 
+
+    --md-sys-color-error: #f38ba8; 
+    --md-sys-color-error-container: #d20f39; 
+    --md-sys-color-on-error-container: #f38ba8;
+    --md-sys-color-on-error: #000000; /* Fixed text for errors */
+    
+    --chat-bubble-me: #a6e3a1;
+    --chat-on-bubble-me: #000000;
+    --chat-bubble-them: #1e1e2e;
+    --chat-on-bubble-them: #cdd6f4;
+    --chat-bg-color: #000000;
+    --chat-bg-image-opacity: 0.05;
+    --search-highlight: #f9e2af;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body, *:not(.material-symbols-rounded) {
+    font-family: 'Lexend', sans-serif !important;
+}
+body {
+    background-color: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    transition: background-color 0.3s, color 0.3s;
+}

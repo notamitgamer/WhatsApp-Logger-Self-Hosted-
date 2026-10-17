@@ -6,17 +6,7 @@
 
 <b><p align="center">A privacy-focused, self-hosted WhatsApp archiving tool. It captures messages (including deleted ones) via a linked device connection and stores them in your own Firebase Firestore database.</p></b>
 
->[!TIP]
-> Now you can see the server logs in the frontend by going to `Settings` -> `System Diagnostics` -> Toggle `Live server logs`. Also you can visit `https://your-app.onrender.com/logs` after login to see the logs.
-
-## Upgrade Notes (v4.2.x)
-
-If you're updating from an older version, here's everything that changed across the v4.2.x line in one place:
-
-* **v4.2.1 — Security fix:** Removed the public Firebase Web SDK config from the frontend. The frontend now only talks to your Render backend, never Firestore directly. Update your Firestore rules to deny all direct client access as shown in [Step 1](#step-1-firebase-setup-the-database).
-* **v4.2.2 — Real-time sync now covers every chat, not just the one you have open:** Previously, new messages only arrived for a chat you already had open — anything happening in other chats sat on the server until you clicked into them. Now a single sync connection streams updates for *all* chats at once, so incoming messages show up across every contact the moment they arrive, the way WhatsApp itself behaves when your phone comes back online.
-* **v4.2.2 — Full resync with real progress:** `Settings` -> refresh icon -> `Hard Reset` now pulls your entire message history chat-by-chat instead of one giant download, so the progress bar reflects actual messages fetched instead of a rough guess. Use this if you ever open a chat that shows nothing locally even though the server has history for it (e.g. after clearing site data or on a new device/browser).
-* **UI refresh:** Reworked to three selectable themes — Catppuccin Latte (light), Catppuccin Mocha (dark), and a true-black AMOLED theme — replacing the old dark-mode toggle and the multiple chat-background picker. Find it under `Settings` -> `Appearance` -> `Theme`.
+<p align="center"><b>If this logger saves you time, please give it a <a href="https://github.com/notamitgamer/WhatsApp-Logger-Self-Hosted-">star on GitHub</a> ⭐ It takes two seconds and means a lot!</b></p>
 
 > [!IMPORTANT]
 > Using this logger is completely safe and will not get your WhatsApp account banned. Here is why:
@@ -25,12 +15,8 @@ If you're updating from an older version, here's everything that changed across 
 > * **Standard Linked Device:** The tool connects to WhatsApp using the official Multi-Device WebSocket protocol. To WhatsApp's servers, this connection looks exactly like you logging into standard WhatsApp Web on a secondary browser. 
 > * **No User Reports:** The number one cause of bans is other users reporting an account. Since this logger works silently in the background and does not interact with anyone, there is zero risk of being reported.
 
- > [!TIP]
-> Check <a href="https://docs.amit.is-a.dev/whatsapp-logger/">guide</a> for detailed installation process. 
-
-### Important notes:
- * It is recommended to download the **web app (PWA)** after the publication of the webpage for better security and native experience. 
- * It is recommended to use **PIN** or **Biometric authentication** inside the web app. Find the authentication options in Settings.
+> [!TIP]
+> Check <a href="https://docs.amit.is-a.dev/whatsapp-logger/">guide</a> for detailed installation process.
 
 ## Features
 
@@ -40,7 +26,11 @@ If you're updating from an older version, here's everything that changed across 
 * **Media Support**: Captures text messages (Images/Media support depends on Baileys implementation, primarily text-focused).
 * **Search & Filter**: Search by content or filter by date.
 * **Export**: Export chat logs to `.txt` files.
+* **Live Server Logs**: See backend logs in the app under `Settings` -> `System Diagnostics` -> `Live server logs`, or visit `https://your-app.onrender.com/logs` after login.
 * **Offline Ready**: Uses IndexedDB caching so you can read your logs even without an internet connection.
+
+> [!NOTE]
+> **Upgrading from an older version?** Check the [CHANGELOG](CHANGELOG.md) first. v4.3.0 moves your Render URL to `js/config.js`.
 
 ---
 
@@ -64,7 +54,7 @@ If you're updating from an older version, here's everything that changed across 
     * Start in **Production Mode**.
 3.  **Set Security Rules**:
     * Go to the **Rules** tab in Firestore.
-    * Replace the rules with the following. As of v4.2.1, the frontend never talks to Firestore directly — only your Render backend does, via the Admin SDK, which bypasses these rules entirely regardless of what they say. So there's no reason to allow any direct client access:
+    * Replace the rules with the following. As of v4.2.1, the frontend never talks to Firestore directly. Only your Render backend does, via the Admin SDK, which bypasses these rules entirely regardless of what they say. So there's no reason to allow any direct client access:
         ```javascript
         rules_version = '2';
         service cloud.firestore {
@@ -83,7 +73,7 @@ If you're updating from an older version, here's everything that changed across 
     * Click **Generate new private key**.
     * This will download a `.json` file. **Keep this safe.** You will need its content for Render.
 
-That's everything you need from Firebase — the frontend doesn't need any Firebase configuration at all.
+That's everything you need from Firebase. The frontend doesn't need any Firebase configuration at all.
 
 ---
 
@@ -104,7 +94,7 @@ That's everything you need from Firebase — the frontend doesn't need any Fireb
 
 ### Excluding specific chats from logging
 
-If there are chats you don't want logged at all — a bot, a broadcast/status JID, a business account — edit `EXCLUDED_JIDS` in `src/config.js` on your fork before deploying:
+If there are chats you don't want logged at all (a bot, a broadcast/status JID, a business account), edit `EXCLUDED_JIDS` in `src/config.js` on your fork before deploying:
 
 ```javascript
 // --- CONFIGURATION ---
@@ -127,7 +117,7 @@ module.exports = {
 };
 ```
 
-`EXCLUDED_JIDS` is a set of full JIDs (the `...@s.whatsapp.net` / `...@g.us` / `...@lid` identifiers, not just a phone number) that are skipped entirely — they won't be cached, streamed, or included in exports. It ships empty by default. You can find a chat's exact JID from the live server logs (`Settings` -> `System Diagnostics`) the first time it logs a message, then add it here, e.g. `new Set(['917278779512@s.whatsapp.net', '201554426618024@lid'])`, and redeploy.
+`EXCLUDED_JIDS` is a set of full JIDs (the `...@s.whatsapp.net` / `...@g.us` / `...@lid` identifiers, not just a phone number) that are skipped entirely. They won't be cached, streamed, or included in exports. It ships empty by default. You can find a chat's exact JID from the live server logs (`Settings` -> `System Diagnostics`) the first time it logs a message, then add it here, e.g. `new Set(['917278779512@s.whatsapp.net', '201554426618024@lid'])`, and redeploy.
 
 ---
 
@@ -146,24 +136,44 @@ module.exports = {
 
 ## Step 4: Setup Frontend (The Viewer)
 
-1.  Download the `index.html` file from this repository.
-2.  Open `index.html` in a text editor (Notepad, VS Code, etc.).
-3.  Locate the Configuration section near the top of the `<script>` block.
-4.  **Fill in the details**:
+Pick the option that matches how you host the frontend.
+
+### Option A: Fork + auto-deploy (most common)
+
+1.  Open your **fork** on GitHub and go to **`js/config.js`**. Click the pencil icon (**Edit this file**). It's a tiny file with a big `EDIT THIS ONE LINE` banner, so it's hard to miss.
+2.  Paste your Render URL between the quotes (e.g., `https://your-app.onrender.com` - **No trailing slash**).
+3.  Click **Commit changes**. If your hosting provider is connected to your fork and auto-deploys, it redeploys on its own and there's nothing to upload. Leave the file as it is afterwards.
+
+### Option B: Self-host manually
+
+1.  Download this repository (green **Code** button -> **Download ZIP**) or clone it. The frontend is made of `index.html` plus the `css/` and `js/` folders. Keep them together.
+2.  Open **`js/config.js`** in a text editor (Notepad, VS Code, etc.). It is a tiny file with a big `EDIT THIS ONE LINE` banner, so it's hard to miss.
+3.  **Fill in the details**:
     * `RENDER_BACKEND_URL`: Your Render URL (e.g., `https://your-app.onrender.com` - **No trailing slash**).
+4.  **Deploy the Frontend**: Take these files and deploy them with whichever hosting provider you use. How to deploy is up to your provider.
+    * `index.html`
+    * `css/` and `js/` folders
+    * `sw.js` and `manifest.json` (for the installable PWA)
 
-    **It should look like this before you edit it:**
-    ```javascript
-    const RENDER_BACKEND_URL = ""; 
-    ```
+### The setting (both options)
 
-    That's the only setting needed. As of v4.2.1, the frontend authenticates against your Render backend (`/api/verify`) and gets a session token back, used for every chat/message request over Server-Sent Events. Firebase credentials only ever live on the backend, set in Step 2.
+**It should look like this before you edit it:**
+```javascript
+const RENDER_BACKEND_URL = ""; // <-- PUT YOUR RENDER URL HERE
+```
 
-5.  **Deploy the Frontend**:
-    * You can host this single file anywhere:
-        * **Firebase Hosting** (Recommended): `firebase init` -> Hosting -> Select `public` directory -> Put `index.html` there -> `firebase deploy`.
-        * **GitHub Pages**: Enable Pages in your repo settings.
-        * **Netlify/Vercel**: Drag and drop the folder containing `index.html`.
+That's the only setting needed. As of v4.2.1, the frontend authenticates against your Render backend (`/api/verify`) and gets a session token back, used for every chat/message request over Server-Sent Events. Firebase credentials only ever live on the backend, set in Step 2.
+
+### Frontend file layout
+
+```
+index.html        page markup (sidebar, chat area, modals)
+css/              themes, layout, modals (loaded in the order listed in index.html)
+js/config.js      <-- the only file you need to edit
+js/*.js           app code, split by feature (boot, lock screen, SSE sync, chat UI, calendar, ...)
+```
+
+> **Note:** the scripts are plain `<script>` files that share one global scope, so the load order in `index.html` matters. If you add a file, add it to the list at the bottom of `index.html` and to `ASSETS` in `sw.js`.
 
 ---
 
@@ -176,6 +186,9 @@ module.exports = {
     * **Sidebar**: Shows chat list sorted by newest activity.
     * **Search**: Filter contacts by name or phone number.
     * **Export**: Download chat history as a `.txt` file.
+
+> [!TIP]
+> Install the **web app (PWA)** after publishing the page for better security and a native feel, and turn on **PIN** or **Biometric** lock in `Settings`.
 
 ---
 
@@ -190,6 +203,9 @@ Render's free tier spins down after inactivity. To keep your logger running 24/7
 5.  **URL (or IP)**: `https://your-app.onrender.com/ping` (Make sure to add `/ping` at the end).
 6.  **Monitoring Interval**: 5 minutes.
 7.  Click **Create Monitor**.
+
+> [!TIP]
+> Enjoying it? Please [star the repo](https://github.com/notamitgamer/WhatsApp-Logger-Self-Hosted-) ⭐ Stars are the only payment this project asks for, and they help other people find it.
 
 ---
 
