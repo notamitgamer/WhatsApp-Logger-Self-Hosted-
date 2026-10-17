@@ -6,11 +6,11 @@
     <title>WhatsApp Logger</title>
     
     <!-- PWA Manifest -->
-    <link rel="manifest" href="/assets/manifest-wpChat.json">
+    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#006C4C">
     
     <!-- SVG Favicon -->
-    <link rel="icon" href="/assets/icon.svg">
+    <link rel="icon" href="public/icon.svg">
 
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -57,7 +57,7 @@
             <div id="authForm" class="hidden">
                 <div style="text-align: center;" class="anim-up delay-1">
                     <div class="brand-icon">
-                        <img src="/assets/icon.svg" alt="App Logo">
+                        <img src="public/icon.svg" alt="App Logo">
                     </div>
                     <h1 style="font-family:'Lexend', sans-serif; font-size:28px; margin:8px 0; font-weight:400;">Welcome Back</h1>
                     <p style="color:var(--md-sys-color-on-surface-variant); font-size:14px;">Sign in to your chat log</p>
@@ -432,7 +432,7 @@
     <div id="installSheet" class="install-sheet">
         <div class="sheet-header"><h3 style="font-family:'Lexend', sans-serif; margin: 0;">Install App</h3><button class="icon-btn" onclick="closeInstallSheet()"><span class="material-symbols-rounded">close</span></button></div>
         <div class="sheet-content">
-            <div style="width:64px; height:64px; margin:0 auto 16px; display:flex; align-items:center; justify-content:center;"><img src="/assets/icon.svg" alt="App Logo" style="width:100%; height:100%; object-fit: contain;"></div>
+            <div style="width:64px; height:64px; margin:0 auto 16px; display:flex; align-items:center; justify-content:center;"><img src="public/icon.svg" alt="App Logo" style="width:100%; height:100%; object-fit: contain;"></div>
             <p style="color:var(--md-sys-color-on-surface-variant); margin-bottom:24px;">Install WhatsApp Logger App for a better experience, full screen view, and enhanced security.</p>
             <div class="sheet-actions"><button class="m3-btn filled" onclick="installPWA()">Install App</button><button class="m3-btn text" onclick="closeInstallSheet()">Continue in Browser</button></div>
         </div>

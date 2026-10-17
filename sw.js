@@ -26,8 +26,8 @@ const ASSETS = [
     './js/chat-actions.js',
     './js/maintenance.js',
     './js/diagnostics.js',
-    '<--- website link --->',
-    '<--- icon --->',
+    './manifest.json',
+    './public/icon.svg',
     'https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap',
     'https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0'
 ];

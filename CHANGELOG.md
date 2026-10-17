@@ -13,6 +13,10 @@ Upgrading? Read the **Upgrade notes** under each version.
 - `package.json` version synced to 4.3.0 (it was still `1.0.0`).
 - README and docs updated for the new frontend layout.
 
+### Fixed
+- The logo, web app manifest and service worker are now loaded from the files that ship in the repo (`public/icon.svg`, `manifest.json`, `sw.js`). The page used to ask for `/assets/...` paths that only existed on one host, so installing as an app and offline mode did not work on plain forks.
+- `manifest.json` `start_url` and the service worker file list no longer contain placeholder text that had to be edited by hand.
+
 ### Upgrade notes (action required)
 1. In your fork, click **Sync fork** -> **Update branch**.
 2. If GitHub reports a conflict on `index.html` (because you edited your Render URL there before), discard your fork's change and continue. That edit only contained your URL. If you also made other edits to `index.html`, copy them somewhere first.

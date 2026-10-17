@@ -43,7 +43,7 @@ function cancelPinSetup() { document.getElementById('pinLockToggle').checked = f
 
 async function registerBiometric() {
     try {
-        const iconPath = new URL('/assets/icon.svg', window.location.href).toString();
+        const iconPath = new URL('public/icon.svg', window.location.href).toString();
         const credential = await navigator.credentials.create({
             publicKey: { challenge: new Uint8Array([1, 2, 3, 4]), rp: { name: "WhatsApp Logger", icon: iconPath }, user: { id: new Uint8Array([1]), name: "User", displayName: "App User" }, pubKeyCredParams: [{type: "public-key", alg: -7}], authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" }, timeout: 60000 }
         });

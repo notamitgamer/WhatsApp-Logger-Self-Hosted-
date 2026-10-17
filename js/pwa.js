@@ -1,5 +1,5 @@
 if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.protocol === 'http:')) {
-    navigator.serviceWorker.register('/assets/sw-wpChat.js').catch(err => {
+    navigator.serviceWorker.register('sw.js').catch(err => {
         console.warn('SW Register Fail:', err);
     });
     window.addEventListener('online', () => {
