@@ -217,4 +217,4 @@ Render's free tier spins down after inactivity. To keep your logger running 24/7
 
 ## Disclaimer
 
-This tool is for personal archiving purposes. Using it to log conversations without consent may violate privacy laws in your jurisdiction. The author is not responsible for misuse.
+This tool is for personal archiving purposes. Using it to log conversations without consent may violate privacy laws in your jurisdiction. The author is not responsible for misuse. Thank you for using it responsibly.
