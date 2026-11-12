@@ -1,4 +1,4 @@
-const CACHE_NAME = 'walogger-4.3.0'; // Incremented to trigger an update
+const CACHE_NAME = 'walogger-4.3.1'; // Bumped to pick up theme-sync + new icons
 const FONT_CACHE = 'walogger-fonts-4.3.0'; // New cache specifically for offline Google Fonts
 const ASSETS = [
     './',
@@ -19,6 +19,7 @@ const ASSETS = [
     './js/boot.js',
     './js/lock-screen.js',
     './js/settings.js',
+    './js/theme-sync.js',
     './js/sse-chats.js',
     './js/sse-sync.js',
     './js/chat-ui.js',
@@ -28,6 +29,8 @@ const ASSETS = [
     './js/diagnostics.js',
     './manifest.json',
     './public/icon.svg',
+    './public/icon-maskable-192.png',
+    './public/icon-maskable-512.png',
     'https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap',
     'https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0'
 ];
