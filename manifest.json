@@ -3,13 +3,26 @@
   "short_name": "WA Logger",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#FBFDF9",
-  "theme_color": "#006C4C",
+  "background_color": "#eff1f5",
+  "theme_color": "#eff1f5",
   "icons": [
     {
       "src": "public/icon.svg",
       "sizes": "512x512",
-      "type": "image/svg+xml"
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "public/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "public/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
