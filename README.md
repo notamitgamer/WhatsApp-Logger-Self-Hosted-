@@ -18,6 +18,35 @@
 > [!TIP]
 > Check <a href="https://docs.amit.is-a.dev/whatsapp-logger/">guide</a> for detailed installation process.
 
+## Native Android App
+
+> [!IMPORTANT]
+> **Build it yourself for maximum trust and security.** The native app is 100% Kotlin + Jetpack Compose (Material3), no WebView, no wrapper. You compile the APK from source via GitHub Actions — no pre-built binaries, no hidden code.
+
+### Build Instructions
+
+1. **Fork this repository** to your GitHub account
+2. Go to the **Actions** tab in your fork
+3. Select **"Build Native Android APK"** workflow
+4. Click **Run workflow** → Choose `release` or `debug` → **Run workflow**
+5. Wait for the build to complete (2-5 minutes)
+6. Download `whatsapp-logger-release.apk` (or debug) from **Artifacts**
+7. Install on your Android device (enable "Install unknown apps" for your browser/file manager)
+
+**First launch:** The app will ask for your Render backend URL (e.g., `https://your-app.onrender.com`). This is stored encrypted on your device only. Then log in with your backend username/password.
+
+### Native App Features
+
+* **Pure Native**: Kotlin + Jetpack Compose M3 — identical look/feel to web PWA
+* **Material3 Theming**: Latte (Light), Mocha (Dark), Amoled (True Black) — exact parity with web
+* **Hardware-Backed Security**: PIN (Argon2id) + BiometricPrompt (fingerprint/face) via Android KeyStore
+* **Encrypted Storage**: Backend URL, auth token, PIN hash in EncryptedSharedPreferences (AES-256-GCM)
+* **Offline-First**: Room database caches all chats/messages; SSE syncs delta on reconnect
+* **Background Sync**: Foreground Service + WorkManager keep SSE alive 24/7
+* **Native Share**: Export chats via Android Share Sheet
+* **Adaptive Icon**: Monochrome launcher icon from the project logo
+* **Edge-to-Edge UI**: True immersive experience with dynamic status/nav bar colors
+
 ## Features
 
 * **Anti-Delete**: Logs messages instantly, preserving them even if the sender deletes them.
