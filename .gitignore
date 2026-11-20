@@ -2,3 +2,8 @@ node_modules/
 package-lock.json
 serviceAccountKey.json
 .env
+android/build/
+android/app/build/
+android/.gradle/
+android/local.properties
+*.jks
