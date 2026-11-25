@@ -99,3 +99,11 @@
 .new-msg-badge { position: absolute; top: -2px; right: -2px; width: 12px; height: 12px; background: var(--md-sys-color-error); border-radius: 50%; border: 2px solid var(--md-sys-color-surface-container-high); }
 
 .offline-banner { position: fixed; top: 0; left: 50%; transform: translateX(-50%); background: var(--md-sys-color-error); color: var(--md-sys-color-on-error); padding: 4px 16px; border-radius: 0 0 8px 8px; font-size: 12px; z-index: 9999; display: flex; align-items: center; gap: 6px; box-shadow: var(--elevation-1); }
+
+/* deleted / edited / placeholder messages */
+.msg-ph { font-style: italic; opacity: 0.75; }
+.msg-bubble.msg-deleted { background: color-mix(in srgb, var(--md-sys-color-error) 28%, var(--md-sys-color-surface, #1e1e2e)); color: var(--md-sys-color-on-surface); }
+.msg-del-label { display: flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; color: var(--md-sys-color-error); margin-bottom: 2px; }
+.msg-del-label .material-symbols-rounded { font-size: 14px; }
+.msg-edit { margin-top: 6px; padding-top: 6px; border-top: 1px solid color-mix(in srgb, currentColor 22%, transparent); }
+.msg-edit-label { font-size: 11px; font-weight: 600; color: var(--md-sys-color-primary); margin-bottom: 1px; }

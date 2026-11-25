@@ -1,3 +1,12 @@
+// Message text -> safe HTML: clickable links, and italic placeholders like "[--- Image ---]"
+function formatMessageBody(text) {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return escapeHTML(text || '').split('\n').map(line => {
+        if (/^\[--- .+ ---\]$/.test(line)) return `<span class="msg-ph">${line}</span>`;
+        return line.replace(urlRegex, url => `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline; font-weight: 600;">${url}</a>`);
+    }).join('\n');
+}
+
 let enteredPin = ""; let setupPin = ""; let setupStep = 0; let isLocked = false;
 let failAttempts = parseInt(localStorage.getItem('wp_fail_attempts') || '0');
 let lockUntil = parseInt(localStorage.getItem('wp_lock_until') || '0');
