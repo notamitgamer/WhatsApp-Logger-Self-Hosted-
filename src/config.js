@@ -11,7 +11,7 @@ const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || '').split(',').map(o => 
 const TOKEN_SECRET = process.env.TOKEN_SECRET || '';
 
 // Add the jids here to exclude them, this is a array remember that
-const EXCLUDED_JIDS = new Set([]); 
+const EXCLUDED_JIDS = new Set(['']); 
 
 module.exports = {
     PORT,
