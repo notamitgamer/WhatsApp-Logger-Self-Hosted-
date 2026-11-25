@@ -1,6 +1,8 @@
 const express = require('express');
 const { db } = require('../firebase');
-const { chatsCache, messagesCache, isCacheReady } = require('../cache');
+const { chatsCache, messagesCache, isCacheReady, upsertChat, getStats, pub } = require('../cache');
+const { VERSION } = require('../config');
+const { getIsConnected } = require('../whatsapp');
 const { clients, enforceConnectionCeiling } = require('../sseManager');
 const { verifyApiToken } = require('../auth');
 
@@ -8,6 +10,16 @@ const router = express.Router();
 
 router.get('/ping', (req, res) => {
     res.status(200).send('Pong');
+});
+
+// Private health report: cache size, queued writes, snapshot and quota state
+router.get('/api/health', verifyApiToken, (req, res) => {
+    res.json({
+        version: VERSION,
+        uptimeSeconds: Math.floor(process.uptime()),
+        whatsappConnected: getIsConnected(),
+        ...getStats()
+    });
 });
 
 // --- API: Server Sent Events ---
@@ -93,8 +105,8 @@ router.get('/api/messages/stream', verifyApiToken, async (req, res) => {
         if (chatMsgs) {
             const sinceTs = since ? parseInt(since, 10) : 0;
             for (const msg of chatMsgs.values()) {
-                if (msg.timestamp > sinceTs) {
-                    initialMessages.push(msg);
+                if (msg.timestamp > sinceTs || (msg.deletedAt && msg.deletedAt > sinceTs) || (msg.editedAt && msg.editedAt > sinceTs)) {
+                    initialMessages.push(pub(msg));
                 }
             }
             initialMessages.sort((a, b) => a.timestamp - b.timestamp);
@@ -136,8 +148,8 @@ router.get('/api/sync/stream', verifyApiToken, async (req, res) => {
 
         messagesCache.forEach((msgMap, chatId) => {
             for (const msg of msgMap.values()) {
-                if (msg.timestamp > sinceTs) {
-                    initialMessages.push({ ...msg, chatId });
+                if (msg.timestamp > sinceTs || (msg.deletedAt && msg.deletedAt > sinceTs) || (msg.editedAt && msg.editedAt > sinceTs)) {
+                    initialMessages.push({ ...pub(msg), chatId });
                 }
             }
         });
@@ -173,7 +185,7 @@ router.get('/api/export/chats', verifyApiToken, async (req, res) => {
     }
 });
 
-// Plain JSON (not SSE): all messages for a single chat. Called once per
+// Plain JSON (not SSE) — all messages for a single chat. Called once per
 // chat by the client's resync loop so progress can be updated after each
 // chat finishes, instead of waiting on one all-chats blob.
 router.get('/api/export/messages', verifyApiToken, async (req, res) => {
@@ -184,7 +196,7 @@ router.get('/api/export/messages', verifyApiToken, async (req, res) => {
 
     try {
         const msgMap = messagesCache.get(chatId);
-        const messages = msgMap ? Array.from(msgMap.values()) : [];
+        const messages = msgMap ? Array.from(msgMap.values()).map(pub) : [];
         res.json({ chatId, messages });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -199,13 +211,8 @@ router.post('/api/rename', verifyApiToken, async (req, res) => {
     if (!id || !customName) return res.status(400).json({ error: 'Missing parameters' });
 
     try {
-        // Fire & Forget to DB
-        await db.collection('Chats').doc(id).set({ customName }, { merge: true });
-
-        // Instant RAM update
-        if (chatsCache.has(id)) {
-            chatsCache.get(id).customName = customName;
-        }
+        // RAM now, Firestore queued (retried if it is down)
+        upsertChat(id, { customName });
 
         res.json({ success: true });
     } catch (err) {
@@ -221,7 +228,7 @@ router.get('/api/export', verifyApiToken, async (req, res) => {
 
         chatsCache.forEach((data, id) => exportData.chats[id] = data);
         messagesCache.forEach((msgMap, chatId) => {
-            exportData.messages[chatId] = Array.from(msgMap.values());
+            exportData.messages[chatId] = Array.from(msgMap.values()).map(pub);
         });
 
         res.json(exportData);
