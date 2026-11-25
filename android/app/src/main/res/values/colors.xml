@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- These are fallback colors; actual theming is done via Compose MaterialTheme -->
+    <color name="primary">#40A02B</color>
+    <color name="onPrimary">#EFF1F5</color>
+    <color name="primaryContainer">#A6D189</color>
+    <color name="onPrimaryContainer">#1E1E2E</color>
+    <color name="secondary">#179299</color>
+    <color name="onSecondary">#EFF1F5</color>
+    <color name="secondaryContainer">#99D1DB</color>
+    <color name="onSecondaryContainer">#4C4F69</color>
+    <color name="surface">#EFF1F5</color>
+    <color name="onSurface">#4C4F69</color>
+    <color name="surfaceContainerHighest">#BCC0CC</color>
+    <color name="outline">#8C8FA1</color>
+    <color name="error">#D20F39</color>
+    <color name="onError">#EFF1F5</color>
+    <color name="errorContainer">#EA76CB</color>
+    <color name="onErrorContainer">#EFF1F5</color>
+    <color name="ic_launcher_background">#006C4C</color>
+</resources>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">localhost</domain>
+        <domain includeSubdomains="true">10.0.2.2</domain>
+        <domain includeSubdomains="true">192.168.0.0/16</domain>
+        <domain includeSubdomains="true">172.16.0.0/12</domain>
+        <domain includeSubdomains="true">10.0.0.0/8</domain>
+        <!-- Allow user's custom backend domains -->
+        <domain includeSubdomains="true">*.onrender.com</domain>
+        <domain includeSubdomains="true">*.render.com</domain>
+        <domain includeSubdomains="true">*.ngrok.io</domain>
+        <domain includeSubdomains="true">*.ngrok-free.app</domain>
+        <domain includeSubdomains="true">*.cloudflare.com</domain>
+        <domain includeSubdomains="true">*.fly.dev</domain>
+        <domain includeSubdomains="true">*.railway.app</domain>
+        <domain includeSubdomains="true">*.vercel.app</domain>
+        <domain includeSubdomains="true">*.netlify.app</domain>
+        <domain includeSubdomains="true">*.herokuapp.com</domain>
+    </domain-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+    <debug-overrides>
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="user" />
+        </trust-anchors>
+    </debug-overrides>
+</network-security-config>
