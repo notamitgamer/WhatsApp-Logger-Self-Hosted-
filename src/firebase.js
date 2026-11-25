@@ -19,5 +19,7 @@ try {
 }
 
 const db = admin.firestore();
+// An undefined field would make a whole batch fail; drop such fields instead
+db.settings({ ignoreUndefinedProperties: true });
 
 module.exports = { admin, db };
