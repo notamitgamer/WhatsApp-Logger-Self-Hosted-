@@ -1,5 +1,6 @@
 const { VERSION } = require('../config');
 
+
 // --- SHARED LAYOUT ---
 // One small design system so every page (login, status, logs) shares the
 // same responsive behavior instead of hand-rolled inline styles per page.
