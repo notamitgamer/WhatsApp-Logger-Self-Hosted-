@@ -3,3 +3,6 @@ package-lock.json
 serviceAccountKey.json
 .env
 pending-writes.json
+android/keystore.jks
+*.jks
+*.keystore
