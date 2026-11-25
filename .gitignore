@@ -2,3 +2,4 @@ node_modules/
 package-lock.json
 serviceAccountKey.json
 .env
+pending-writes.json
