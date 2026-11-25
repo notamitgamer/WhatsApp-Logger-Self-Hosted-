@@ -7,7 +7,7 @@
  *    - This is the ONLY setting you need to change in the frontend.
  * ============================================================ */
 
-const RENDER_BACKEND_URL = "https://logger-8i35.onrender.com"; // <-- PUT YOUR RENDER URL HERE
+const RENDER_BACKEND_URL = ""; // <-- PUT YOUR RENDER URL HERE
 
 /* ============================================================
  *  >>>>>>>>>>>>>>>>>>>>>  DONE  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
