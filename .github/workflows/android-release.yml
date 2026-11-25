@@ -1,0 +1,79 @@
+name: Android signed release
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17', cache: gradle }
+
+      - name: Check signing secrets
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          for v in KEYSTORE_BASE64 KEYSTORE_PASSWORD KEY_ALIAS KEY_PASSWORD; do
+            if [ -z "${!v}" ]; then echo "::error title=Missing secret::Add the repository secret $v (Settings > Secrets and variables > Actions)"; exit 1; fi
+          done
+          echo "$KEYSTORE_BASE64" | base64 -d > android/keystore.jks
+
+      - name: Android SDK
+        run: |
+          SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          SM=$(ls "$SDK"/cmdline-tools/*/bin/sdkmanager | head -1)
+          yes | "$SM" --sdk_root="$SDK" --licenses >/dev/null || true
+          "$SM" --sdk_root="$SDK" "platforms;android-34" "build-tools;34.0.0" >/dev/null
+          echo "sdk.dir=$SDK" > android/local.properties
+          echo "BUILD_TOOLS=$SDK/build-tools/34.0.0" >> "$GITHUB_ENV"
+
+      - name: Build signed APK
+        working-directory: android
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: bash ./gradlew :app:assembleFast --no-daemon 2>&1 | tee build.log; exit ${PIPESTATUS[0]}
+
+      - name: Verify signature and name the APK
+        id: apk
+        run: |
+          SRC=$(ls android/app/build/outputs/apk/fast/*.apk | head -1)
+          VER=$(grep -oP 'versionName = "\K[^"]+' android/app/build.gradle.kts)
+          OUT="WhatsApp-Logger-v${VER}.apk"
+          cp "$SRC" "$OUT"
+          "$BUILD_TOOLS/apksigner" verify --print-certs "$OUT" | tee cert.txt
+          if grep -qi "Android Debug" cert.txt; then echo "::error::APK is signed with the debug key, not your release key"; exit 1; fi
+          SHA=$(grep -m1 "SHA-256 digest" cert.txt | awk '{print $NF}')
+          echo "version=$VER" >> "$GITHUB_OUTPUT"
+          echo "apk=$OUT" >> "$GITHUB_OUTPUT"
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@v4
+        with: { name: signed-apk, path: "${{ steps.apk.outputs.apk }}" }
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="v${{ steps.apk.outputs.version }}"
+          RUN="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          awk -v v="$TAG" '$0 ~ "^## "v"$" {f=1; next} /^## / && f {exit} f' android/CHANGELOG.md > notes.md
+          [ -s notes.md ] || echo "See android/CHANGELOG.md" > notes.md
+          {
+            echo; echo "---"
+            echo "Signed APK. Certificate SHA-256: \`${{ steps.apk.outputs.sha }}\`"
+            echo "Built by [GitHub Actions run #$GITHUB_RUN_NUMBER]($RUN) from ${GITHUB_SHA::7}."
+          } >> notes.md
+          gh release delete "$TAG" --cleanup-tag --yes --repo "$GITHUB_REPOSITORY" || true
+          gh release create "$TAG" "${{ steps.apk.outputs.apk }}" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --title "WhatsApp Logger Android $TAG" --notes-file notes.md
+          echo "### Released $TAG" >> "$GITHUB_STEP_SUMMARY"
+          echo "APK: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/tag/$TAG" >> "$GITHUB_STEP_SUMMARY"
+          echo "Run: $RUN" >> "$GITHUB_STEP_SUMMARY"
