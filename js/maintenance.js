@@ -94,7 +94,7 @@ async function executeHardRefresh() {
         const chatsData = exportData.chats || [];
         const totalMessages = Math.max(1, exportData.totalMessages || 1);
         const groups = {};
-        const excluded = ['917278779512@s.whatsapp.net', '201554426618024@lid'];
+        const excluded = [''];
 
         chatsData.forEach(d => {
             if (!d.lastActive || excluded.includes(d.id)) return;
