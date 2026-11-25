@@ -120,7 +120,7 @@ module.exports = {
 };
 ```
 
-`EXCLUDED_JIDS` is a set of full JIDs (the `...@s.whatsapp.net` / `...@g.us` / `...@lid` identifiers, not just a phone number) that are skipped entirely. They won't be cached, streamed, or included in exports. It ships empty by default. You can find a chat's exact JID from the live server logs (`Settings` -> `System Diagnostics`) the first time it logs a message, then add it here, e.g. `new Set(['917278779512@s.whatsapp.net', '201554426618024@lid'])`, and redeploy.
+`EXCLUDED_JIDS` is a set of full JIDs (the `...@s.whatsapp.net` / `...@g.us` / `...@lid` identifiers, not just a phone number) that are skipped entirely. They won't be cached, streamed, or included in exports. It ships empty by default. You can find a chat's exact JID from the live server logs (`Settings` -> `System Diagnostics`) the first time it logs a message, then add it here, e.g. `new Set(['910123456789@s.whatsapp.net', '123456789@lid'])`, and redeploy.
 
 ---
 
