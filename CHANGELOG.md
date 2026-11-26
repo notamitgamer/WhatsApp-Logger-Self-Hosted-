@@ -3,6 +3,18 @@
 All notable changes to this project are listed here, newest first.
 Upgrading? Read the **Upgrade notes** under each version.
 
+## v4.5.7
+
+Hotfix for WhatsApp device linking (both QR code and phone number).
+
+### Fixed
+- **QR code and phone number linking failing after pairing.** When WhatsApp asked the backend to restart right after a scan or code entry, the server reconnected before the 20-second auth save debounce had written the new session to Firestore—causing the fresh credentials to be lost and WhatsApp to time out with *"Couldn't log in, check your internet connection"*. The backend now flushes the auth snapshot to Firestore before restarting the socket, and ensures any concurrent credential updates finish saving first.
+- **Phone number pairing rejected with *"Couldn't link device"*.** Switched the WhatsApp Web client identifier from a custom label to a standard browser profile (`Ubuntu / Chrome`), which WhatsApp's pairing servers require for 8-character pairing codes.
+
+### Upgrade notes
+1. Redeploy the backend.
+2. If a previous failed attempt left a partial session behind, click **Relink device** on the status page (or clear `auth_store` in Firestore) and link again.
+
 ## v4.5.6
 
 The big one: deleted and edited messages are now logged, and the backend no longer eats your Firestore quota.
