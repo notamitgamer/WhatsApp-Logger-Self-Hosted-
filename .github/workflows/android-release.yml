@@ -73,7 +73,7 @@ jobs:
           } >> notes.md
           gh release delete "$TAG" --cleanup-tag --yes --repo "$GITHUB_REPOSITORY" || true
           gh release create "$TAG" "${{ steps.apk.outputs.apk }}" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
-            --title "WhatsApp Logger Android $TAG" --notes-file notes.md
+            --title "$TAG" --notes-file notes.md
           echo "### Released $TAG" >> "$GITHUB_STEP_SUMMARY"
           echo "APK: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/tag/$TAG" >> "$GITHUB_STEP_SUMMARY"
           echo "Run: $RUN" >> "$GITHUB_STEP_SUMMARY"
