@@ -1,7 +1,8 @@
 const {
     default: makeWASocket,
     DisconnectReason,
-    fetchLatestBaileysVersion
+    fetchLatestBaileysVersion,
+    Browsers
 } = require('@whiskeysockets/baileys');
 const pino = require('pino');
 const { db } = require('./firebase');
@@ -9,7 +10,6 @@ const { useFirestoreAuthState } = require('./authState');
 const { upsertChat, upsertMessage, markMessageDeleted, editMessage, isQuotaError, chatsCache, messagesCache } = require('./cache');
 const { describeMessage, extractEdit, extractRevoke, unwrap } = require('./messageParser');
 const { decryptSecretEdit, isMessageEdit } = require('./secretEdit');
-const { VERSION } = require('./config');
 
 // --- BAILEYS SETUP ---
 let qrCodeData = null;
@@ -136,7 +136,7 @@ async function startWhatsApp() {
         version,
         logger,
         auth: state,
-        browser: [`WhatsApp Logger v${VERSION}`, "Chrome", VERSION],
+        browser: Browsers.ubuntu('Chrome'),
         syncFullHistory: true
     });
 
@@ -156,8 +156,13 @@ async function startWhatsApp() {
             const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
 
             if (statusCode === DisconnectReason.restartRequired) {
-                // Normal right after pairing: WhatsApp asks for a restart. Do it now, no backoff.
-                console.log("System: Pairing finished, restarting socket...");
+                // Normal right after pairing: flush fresh creds to Firestore before restarting.
+                console.log("System: Pairing finished, flushing auth and restarting socket...");
+                try {
+                    await authResult.flushNow();
+                } catch (err) {
+                    console.error("System: Flush before restart failed:", err.message);
+                }
                 scheduleStart(0);
             } else if (shouldReconnect) {
                 consecutiveConnectFailures++;

@@ -100,10 +100,16 @@ async function useFirestoreAuthState(db, collectionName = 'auth_store') {
     }
 
     async function flushNow() {
-        if (timer) { clearTimeout(timer); timer = null; }
-        if (flushing) await flushing;
-        dirty = dirty || false;
-        return flush();
+        while (!closed && (flushing || dirty)) {
+            if (timer) { clearTimeout(timer); timer = null; }
+            if (flushing) {
+                await flushing;
+            } else {
+                await flush();
+                // If flush() failed and re-set dirty, break out instead of spinning
+                if (dirty && timer) break;
+            }
+        }
     }
 
     // ---- wipe everything (relog / logged out) ----

@@ -4,7 +4,7 @@ const AUTH_USER = process.env.AUTH_USER;
 const AUTH_PASS = process.env.AUTH_PASS;
 const MAX_LOGS = 500;
 const MAX_CONNECTIONS_PER_TOKEN = 15;
-const VERSION = '4.5.6';
+const VERSION = '4.5.7';
 // Optional: comma-separated origins allowed to call the API from a browser (default: any)
 const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || '').split(',').map(o => o.trim()).filter(Boolean);
 // Optional: dedicated secret for signing login tokens (falls back to AUTH_PASS)
