@@ -14,8 +14,8 @@ android {
         applicationId = "com.whatsapp.logger"
         minSdk = 24
         targetSdk = 34
-        versionCode = 456
-        versionName = "4.5.6"
+        versionCode = 457
+        versionName = "4.5.7"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
