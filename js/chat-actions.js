@@ -27,7 +27,12 @@ async function downloadChat() {
             if (allMessages.length === 0) return;
             
             allMessages.sort((a,b) => a.timestamp - b.timestamp);
-            const text = allMessages.map(m => `[${new Date(m.timestamp*1000).toLocaleString()}] ${m.senderName}: ${m.text}`).join('\n');
+            const text = allMessages.map(m => {
+                let line = `[${new Date(m.timestamp*1000).toLocaleString()}] ${m.senderName}: ${m.text}`;
+                if (m.deleted) line += '  (deleted for everyone)';
+                (Array.isArray(m.edits) ? m.edits : []).forEach(e => { line += `\n    [edited ${new Date((e.ts || m.timestamp)*1000).toLocaleString()}] ${e.text}`; });
+                return line;
+            }).join('\n');
             
             const blob = new Blob([text], {type:'text/plain'});
             const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'chat.txt'; a.click();

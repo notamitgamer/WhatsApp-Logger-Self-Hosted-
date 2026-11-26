@@ -35,3 +35,26 @@ async function fetchAndRenderLogs(token) {
         }
     } catch (e) {}
 }
+
+// Which backend version is this app talking to?
+async function loadBackendVersion() {
+    const el = document.getElementById('backendVersion');
+    const head = document.getElementById('headerVersion');
+    const token = localStorage.getItem('wp_api_token');
+    // Show the last known backend version straight away (works offline too)
+    const known = localStorage.getItem('wp_backend_version');
+    if (head && known) head.textContent = known;
+    if (!el) return;
+    if (!token) { el.textContent = 'Not signed in'; return; }
+    el.textContent = 'Checking...';
+    try {
+        const res = await fetch(`${RENDER_BACKEND_URL}/api/health`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const d = res.ok ? await res.json() : null;
+        el.textContent = d && d.version ? `v${d.version}` : `Unavailable (HTTP ${res.status})`;
+        if (d && d.version) {
+            localStorage.setItem('wp_backend_version', `v${d.version}`);
+            if (head) head.textContent = `v${d.version}`;
+        }
+    } catch (e) { el.textContent = 'Unreachable'; if (head && !known) head.textContent = 'offline'; }
+}
+window.addEventListener('load', () => setTimeout(loadBackendVersion, 300));

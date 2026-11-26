@@ -1,5 +1,5 @@
-const CACHE_NAME = 'walogger-4.3.1'; // Bumped to pick up theme-sync + new icons
-const FONT_CACHE = 'walogger-fonts-4.3.0'; // New cache specifically for offline Google Fonts
+const CACHE_NAME = 'walogger-4.5.6'; // Bumped to pick up theme-sync + new icons
+const FONT_CACHE = 'walogger-fonts-4.5.6'; // New cache specifically for offline Google Fonts
 const ASSETS = [
     './',
     './index.html',

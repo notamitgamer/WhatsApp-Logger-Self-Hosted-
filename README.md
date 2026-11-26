@@ -20,10 +20,13 @@
 
 ## Features
 
-* **Anti-Delete**: Logs messages instantly, preserving them even if the sender deletes them.
+* **Anti-Delete**: Logs messages instantly. Messages deleted for everyone stay in the log, marked as deleted.
+* **Edit History**: Keeps the original message and every edit, in order.
 * **Privacy First**: You host the backend and database. No third-party servers access your data.
 * **Secure Access**: Frontend is protected by a password validated against your backend.
-* **Media Support**: Captures text messages (Images/Media support depends on Baileys implementation, primarily text-focused).
+* **Media Placeholders**: Photos, videos, documents, voice notes, stickers and polls are logged as readable placeholders like `[--- Image ---]`.
+* **Android app**: A native Material 3 app with offline sync, PIN/biometric lock and a deleted-messages filter. See the Releases page.
+* **Quota friendly**: Memory cache + compressed snapshot keeps Firestore use to a few reads per restart.
 * **Search & Filter**: Search by content or filter by date.
 * **Export**: Export chat logs to `.txt` files.
 * **Live Server Logs**: See backend logs in the app under `Settings` -> `System Diagnostics` -> `Live server logs`, or visit `https://your-app.onrender.com/logs` after login.
@@ -117,7 +120,7 @@ module.exports = {
 };
 ```
 
-`EXCLUDED_JIDS` is a set of full JIDs (the `...@s.whatsapp.net` / `...@g.us` / `...@lid` identifiers, not just a phone number) that are skipped entirely. They won't be cached, streamed, or included in exports. It ships empty by default. You can find a chat's exact JID from the live server logs (`Settings` -> `System Diagnostics`) the first time it logs a message, then add it here, e.g. `new Set(['917278779512@s.whatsapp.net', '201554426618024@lid'])`, and redeploy.
+`EXCLUDED_JIDS` is a set of full JIDs (the `...@s.whatsapp.net` / `...@g.us` / `...@lid` identifiers, not just a phone number) that are skipped entirely. They won't be cached, streamed, or included in exports. It ships empty by default. You can find a chat's exact JID from the live server logs (`Settings` -> `System Diagnostics`) the first time it logs a message, then add it here, e.g. `new Set(['910123456789@s.whatsapp.net', '123456789@lid'])`, and redeploy.
 
 ---
 
@@ -130,7 +133,11 @@ module.exports = {
     * iOS: Settings -> Linked Devices
     * Android: Three dots -> Linked Devices
 5.  Tap **Link a Device** and scan the QR code.
-6.  The page should refresh and say **"System Operational"**. Your backend is now listening!
+6.  The page switches to **Connected** on its own. Your backend is now listening!
+
+**No camera?** Use the **Phone number** tab on the link page, enter your number with country code, and type the 8-character code in WhatsApp (Linked devices -> Link a device -> Link with phone number instead).
+
+**Upgrading from an older version?** Link once more after updating, create the Firestore index if `/logs` shows "Catch-up skipped" with a link, and optionally click **Delete old whatsapp_auth data** on the status page.
 
 ---
 

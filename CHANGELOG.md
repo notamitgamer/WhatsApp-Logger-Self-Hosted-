@@ -3,6 +3,38 @@
 All notable changes to this project are listed here, newest first.
 Upgrading? Read the **Upgrade notes** under each version.
 
+## v4.5.6
+
+The big one: deleted and edited messages are now logged, and the backend no longer eats your Firestore quota.
+
+### Added
+- **Deleted messages.** When someone deletes a message for everyone, the logger keeps the original text and marks it as deleted. The Android app shows it in red with a "Deleted for everyone" label and has a Deleted filter.
+- **Edit history.** The original message and every later edit are kept, in order. WhatsApp's encrypted edits are decrypted on the server.
+- **Non-text messages.** Photos, videos, documents, voice notes, stickers, polls, contacts and locations are logged as readable placeholders such as `[--- Image ---]` or `[--- Document: report.pdf ---]`, plus the caption if there is one. View-once and disappearing messages are unwrapped.
+- **Link with a phone number.** Besides the QR code you can now link WhatsApp with an 8-character pairing code. The QR page auto-refreshes and redirects when linking finishes.
+- **Relink device** button on the status page, and a **Delete old whatsapp_auth data** button for people upgrading from an older version.
+- Group names are fetched and shown. Chats can be renamed (`POST /api/rename`).
+- Formal login, status, health and logs pages. `/health` shows cache, queue, snapshot, quota and memory use. `/api/health` returns the same as JSON and includes the backend `version`.
+- Android: **Settings → About → Backend version** shows which backend version the app is talking to.
+
+### Changed
+- **Far fewer Firestore reads and writes.** Chats and messages are kept in memory and saved as a compressed snapshot, so a restart costs about 2 reads instead of tens of thousands. Writes are queued, de-duplicated and kept on disk, so nothing is lost while Firestore is unreachable or over quota.
+- **WhatsApp login is stored as one compressed document** (`auth_store/session`) instead of thousands of tiny documents. A fresh link takes seconds because the server restarts straight after pairing.
+- Security: signed login tokens, rate-limited login, security headers, optional `ALLOWED_ORIGINS` and `TOKEN_SECRET` variables. The server refuses to run without `AUTH_USER` and `AUTH_PASS`.
+
+### Fixed
+- Deleting a message that was edited first is now recorded.
+- Edits reach the app even if it already synced the original message.
+- A failed relog or logout no longer leaves the server without a WhatsApp connection.
+
+### Upgrade notes (action required)
+1. Redeploy the backend. Optionally add `TOKEN_SECRET` (any long random string) and `ALLOWED_ORIGINS` in Render.
+2. **Scan the QR code (or use a phone number) once more.** The login moved to a new place, so the old one is not picked up.
+3. Everyone has to **sign in again**, including the app, because the login token format changed.
+4. Open `/logs`. If you see **"Catch-up skipped"** with a link, open the link and click **Create index** in Firebase. This is a one-time step.
+5. Optional: on the status page click **Delete old whatsapp_auth data**. Run it when your Firestore quota is healthy, because it uses about one read and one write per old document.
+6. Keep the [UptimeRobot ping](README.md#step-6-keep-it-alive-uptimerobot) running so Render's free tier doesn't sleep.
+
 ## v4.3.0
 
 ### Changed

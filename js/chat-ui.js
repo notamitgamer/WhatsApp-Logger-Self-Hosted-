@@ -92,11 +92,13 @@ function renderMsgs(map) {
         const showSenderName = !m.fromMe && isCurrentChatGroup && m.senderName && m.senderName !== "Unknown" && !isSamePrev; 
         div.id = `msg-${m.timestamp}`; div.dataset.date = dateStr;
 
-        const safeText = escapeHTML(m.text || '');
-        const urlRegex = /(https?:\/\/[^\s]+)/g;
-        const formattedText = safeText ? safeText.replace(urlRegex, url => `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline; font-weight: 600;">${url}</a>`) : '';
+        if (m.deleted) div.classList.add('msg-deleted');
+        const formattedText = formatMessageBody(m.text);
+        const timeFmt = { hour: '2-digit', minute: '2-digit' };
+        const deletedLabel = m.deleted ? `<div class="msg-del-label"><span class="material-symbols-rounded">delete</span>Deleted for everyone</div>` : '';
+        const editsHtml = (Array.isArray(m.edits) ? m.edits : []).map(e => `<div class="msg-edit"><div class="msg-edit-label">Edited &middot; ${new Date((e.ts || m.timestamp) * 1000).toLocaleTimeString([], timeFmt)}</div><div class="msg-text">${formatMessageBody(e.text)}</div></div>`).join('');
 
-        div.innerHTML = `${showSenderName ? `<div class="msg-sender">${escapeHTML(m.senderName)}</div>` : ''}<div class="msg-text">${formattedText || 'Media'}</div><div class="msg-meta">${date.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div>`;
+        div.innerHTML = `${showSenderName ? `<div class="msg-sender">${escapeHTML(m.senderName)}</div>` : ''}${deletedLabel}<div class="msg-text">${formattedText || 'Media'}</div>${editsHtml}<div class="msg-meta">${date.toLocaleTimeString([], timeFmt)}</div>`;
         if (currentGroup) currentGroup.appendChild(div);
     });
 

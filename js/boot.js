@@ -92,7 +92,25 @@ window.onload = async () => {
     }
 };
 
+// After a server update the login token changes. If the saved one is rejected, go back to the login screen
+// instead of retrying a dead token forever.
+async function validateSession() {
+    const token = localStorage.getItem('wp_api_token');
+    if (!token || !navigator.onLine) return true;
+    try {
+        const res = await fetch(`${RENDER_BACKEND_URL}/api/health`, { headers: { 'Authorization': `Bearer ${token}` } });
+        if (res.status === 401) {
+            localStorage.removeItem('wp_api_token');
+            localStorage.removeItem('wp_auth_expiry');
+            location.reload();
+            return false;
+        }
+    } catch (e) { /* offline or server asleep: keep working from cache */ }
+    return true;
+}
+
 async function startAppSync() {
+    if (!(await validateSession())) return;
     loadChats();
     connectGlobalSyncStream();
 }

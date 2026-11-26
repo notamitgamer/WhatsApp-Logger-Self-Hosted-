@@ -101,8 +101,8 @@ async function attemptLogin() {
             else localStorage.setItem('wp_auth_expiry', Date.now() + (1 * 60 * 60 * 1000));
             
             revealApp();
-        } else throw new Error();
-    } catch (e) { err.style.opacity = '1'; btn.classList.remove('loading'); btn.disabled = false; }
+        } else { const bad = new Error(); bad.serverMsg = data.error; throw bad; }
+    } catch (e) { err.textContent = e.serverMsg || 'Invalid Credentials'; err.style.opacity = '1'; btn.classList.remove('loading'); btn.disabled = false; }
 }
 
 function revealApp() {
