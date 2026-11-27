@@ -8,13 +8,6 @@
 
 <p align="center"><b>If this logger saves you time, please give it a <a href="https://github.com/notamitgamer/WhatsApp-Logger-Self-Hosted-">star on GitHub</a> ⭐ It takes two seconds and means a lot!</b></p>
 
-> [!IMPORTANT]
-> Using this logger is completely safe and will not get your WhatsApp account banned. Here is why:
-> 
-> * **100% Passive (Read-Only):** WhatsApp bans accounts for *sending* spam, bulk messages, or unauthorized automated replies. This logger does not send messages; it acts strictly as a passive listener, which does not trigger WhatsApp's anti-spam algorithms.
-> * **Standard Linked Device:** The tool connects to WhatsApp using the official Multi-Device WebSocket protocol. To WhatsApp's servers, this connection looks exactly like you logging into standard WhatsApp Web on a secondary browser. 
-> * **No User Reports:** The number one cause of bans is other users reporting an account. Since this logger works silently in the background and does not interact with anyone, there is zero risk of being reported.
-
 > [!TIP]
 > Check <a href="https://docs.amit.is-a.dev/whatsapp-logger/">guide</a> for detailed installation process.
 
@@ -34,6 +27,44 @@
 
 > [!NOTE]
 > **Upgrading from an older version?** Check the [CHANGELOG](CHANGELOG.md) first. v4.3.0 moves your Render URL to `js/config.js`.
+
+---
+
+## Is It Safe?
+
+> [!WARNING]
+> **Use at your own risk.** The risk is low in the author's experience, but it is not zero. This project is not affiliated with or endorsed by WhatsApp or Meta.
+
+I have been using this logger on my own account for about 1½ years without a ban. That is one person's experience, not a guarantee.
+
+### Why the risk is kept low
+
+| | |
+|---|---|
+| **Read-only** | Does not send messages or read receipts. |
+| **Linked device** | Uses the same linked-devices feature you scan a QR code for. |
+| **No interaction** | Your contacts receive nothing from it. |
+| **Self-hosted** | Logs go to your own Firebase database, through your own server. |
+
+### Where the risk is
+
+| | |
+|---|---|
+| **Unofficial client** | It uses [Baileys](https://github.com/WhiskeySockets/Baileys), which may go against WhatsApp's Terms of Service. Your account could be restricted or banned, even though the logger only reads. |
+| **Detection can change** | WhatsApp does not publish how it detects unofficial clients, and its systems can change at any time. |
+| **Your data** | Anyone who gets your password, server or Firebase key may be able to read your chats. Keep them private. |
+| **Other people's messages** | Use it only with your own account and follow your local privacy laws. |
+
+---
+
+## Android App
+
+The Android app is a viewer for your own backend. Download the signed APK from the [Releases page](https://github.com/notamitgamer/WhatsApp-Logger-Self-Hosted-/releases).
+
+* The package name and signing key are registered with Google's Android Developer Console (limited distribution account). This is not a Play Store listing or an app review by Google, and only a limited number of devices can be authorized.
+* The package name is now `io.github.notamitgamer.walogger`. It installs as a **separate app** from older builds, so uninstall the old one after setting up the new one.
+* Android may ask you to allow installs from your browser, and Play Protect may scan the APK.
+* Google's developer verification rules may block or add steps to the install on some devices. You can use Android's advanced flow for unverified apps, install through ADB, or build and register your own copy.
 
 ---
 
