@@ -11,7 +11,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.whatsapp.logger"
+        applicationId = "io.github.notamitgamer.walogger"
         minSdk = 24
         targetSdk = 34
         versionCode = 457
