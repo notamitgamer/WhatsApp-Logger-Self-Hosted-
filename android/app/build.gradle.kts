@@ -14,7 +14,7 @@ android {
         applicationId = "io.github.notamitgamer.walogger"
         minSdk = 24
         targetSdk = 34
-        versionCode = 457rc2
+        versionCode = 457
         versionName = "4.5.7.rc2"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
